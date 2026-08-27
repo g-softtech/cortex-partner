@@ -46,10 +46,11 @@ Last Updated By: AI (Antigravity / Claude Sonnet 4.6)
 
 - [x] Phase 5 — Partner Dashboard (UI layout, requirePartnerSession, explicit Prisma selects without admin fields)
 - [x] Phase 6 — Project Submission (Form UI, atomic CPJ-XXXXX sequence generation, secure API route)
+- [x] Phase 7 — Admin Dashboard & Architecture
 
 ## Currently Working On
 
-- [ ] Phase 7 — Admin Dashboard & Architecture
+- [ ] Phase 8 — Project Kickoff
 
 ## Next
 

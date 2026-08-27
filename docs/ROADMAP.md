@@ -153,17 +153,19 @@ The Cortex Partner Program is built in incremental phases. Each phase must be ve
 
 ---
 
-## PHASE 7 — PROJECT ASSESSMENT (ADMIN)
+## PHASE 7 — PROJECT ASSESSMENT (ADMIN) ✅ COMPLETE
 
 **Objective:** Admin can review, scope, price and assess projects.
 
 ### Tasks
-- [ ] `/admin/projects` — admin project list
-- [ ] `/admin/projects/[id]` — admin detail
-- [ ] Set Partner Price (Decimal), timeline, scope
-- [ ] Add admin notes (private)
-- [ ] Send assessment to Partner (status transition)
-- [ ] AuditLog on price changes
+- [x] Admin projects list (`/admin/projects`)
+- [x] Admin project detail (`/admin/projects/[id]`)
+- [x] `PATCH /api/admin/projects/[id]/assess` with concurrency & AuditLog
+- [x] Server-enforced state machine (SUBMITTED -> UNDER_REVIEW -> PRICED etc.)
+- [x] Validated decimal string for partnerPrice
+- [x] Add admin notes (private)
+- [x] Send assessment to Partner (status transition)
+- [x] AuditLog on price changes
 
 ### Dependencies
 - Phase 6 complete

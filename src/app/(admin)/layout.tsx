@@ -31,6 +31,12 @@ export default async function AdminLayout({
             >
               Applications
             </Link>
+            <Link
+              href="/admin/projects"
+              className="text-slate-300 hover:text-white transition-colors"
+            >
+              Projects
+            </Link>
           </nav>
         </div>
         <span className="text-xs text-slate-400 uppercase tracking-widest">Admin Panel</span>
