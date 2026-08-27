@@ -2,9 +2,9 @@
 
 ## Overall Status
 
-Phase: 4 of 16
-Status: COMPLETE (Phase 4)
-Overall Completion: 25%
+Phase: 6 of 16
+Status: COMPLETE (Phase 6)
+Overall Completion: 37%
 
 Last Updated: 2026-08-27
 Last Updated By: AI (Antigravity / Claude Sonnet 4.6)
@@ -44,13 +44,17 @@ Last Updated By: AI (Antigravity / Claude Sonnet 4.6)
 - [x] Phase 3 — Admin Application Management (API routes, UI detail views, and atomic approval transaction)
 - [x] Phase 4 — Authentication (bcrypt, /login, /setup-account, bootstrap script, middleware, JWT, role-based redirect)
 
+- [x] Phase 5 — Partner Dashboard (UI layout, requirePartnerSession, explicit Prisma selects without admin fields)
+- [x] Phase 6 — Project Submission (Form UI, atomic CPJ-XXXXX sequence generation, secure API route)
+
 ## Currently Working On
 
-- [ ] Phase 5 — Partner Dashboard
+- [ ] Phase 7 — Admin Dashboard & Architecture
 
 ## Next
 
-- [ ] `/dashboard` — welcome page, partner ID, statistics, navigation
+- [ ] `/admin` — basic admin overview
+- [ ] `/admin/projects` — admin view of all partner projects
 
 ## Blocked
 
@@ -66,6 +70,21 @@ Last Updated By: AI (Antigravity / Claude Sonnet 4.6)
 - `npx tsc --noEmit` ✅
 - `npm run lint` ✅
 - `npm run build` ✅
+
+### Phase 6 Security Tests
+
+- Project submission API route explicitly drops unknown payload fields (no mass assignment) ✅
+- Project `partnerId` strictly assigned from `requirePartnerSession` context (ignores client spoofing) ✅
+- API explicitly excludes `adminNotes`, `opportunityStatus`, `partnerPrice`, and `scope` from returns ✅
+- Concurrent project submissions safely generate unique `CPJ-XXXXX` numbers via Prisma atomic upsert ✅
+
+### Phase 5 Security Tests
+
+- Unauthenticated access to `/dashboard`, `/projects`, `/profile` → Redirects to `/login` ✅
+- `UserRole.ADMIN` session accessing partner routes → **403 Forbidden** ✅
+- `adminNotes` excluded from partner project detail `select` ✅
+- `opportunityStatus` excluded from partner project detail `select` ✅
+- Server-side IDOR check preventing Partner A from viewing Partner B's project ✅
 
 ### Phase 4 Security Tests
 

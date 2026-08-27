@@ -118,30 +118,34 @@ The Cortex Partner Program is built in incremental phases. Each phase must be ve
 
 ---
 
-## PHASE 5 — PARTNER DASHBOARD
+## PHASE 5 — PARTNER DASHBOARD ✅ COMPLETE
 
 **Objective:** Partner sees their status, stats, and quick actions.
 
 ### Tasks
-- [ ] `/dashboard` — welcome, partner ID, statistics
-- [ ] `/profile` — partner details
-- [ ] Navigation (mobile-first)
-- [ ] Project count stats
+- [x] `/dashboard` — welcome, partner ID, statistics
+- [x] `/profile` — partner details
+- [x] Navigation (mobile-first)
+- [x] Project count stats
+- [x] `/projects` — partner project list
+- [x] `/projects/[id]` — partner project detail (strict IDOR & data pruning)
 
 ### Dependencies
 - Phase 4 complete
 
 ---
 
-## PHASE 6 — PROJECT SUBMISSION
+## PHASE 6 — PROJECT SUBMISSION ✅ COMPLETE
 
-**Objective:** Partner can submit a project opportunity for Cortex to assess.
+**Objective:** Partner sends a new project request.
 
 ### Tasks
-- [ ] `/projects/new` — project submission form
-- [ ] `Project` API route (`POST /api/projects`)
-- [ ] Concurrency-safe `projectNumber` generation (`CPJ-XXXXX`)
-- [ ] `/projects` — partner project list
+- [x] `/projects/new` — project submission form
+- [x] POST `/api/projects` — submission API
+- [x] Zod validation
+- [x] Rate limiting
+- [x] Concurrency-safe ID generation (`CPJ-XXXXX`)
+- [x] Server-side ownership assignmentr project list
 - [ ] `/projects/[id]` — project detail
 
 ### Dependencies

@@ -8,10 +8,11 @@ import { UserRole } from "@prisma/client";
  * This is the FIRST layer of defense. It is NOT the only layer.
  * Every admin API route and admin server component independently enforces
  * authorization via requireAdminSession() in src/lib/auth/session.ts.
+ * Similarly, partner routes enforce requirePartnerSession().
  *
  * Protected route groups:
  * - /admin/* — ADMIN role required
- * - /dashboard/* — PARTNER or ADMIN role required (Phase 5)
+ * - /dashboard/*, /projects/*, /profile/* — PARTNER role required
  *
  * Unauthenticated → redirects to /login
  * Authenticated but wrong role → 403 response
@@ -31,10 +32,14 @@ export default withAuth(
       }
     }
 
-    // Dashboard routes require any authenticated role (Phase 5 will enforce PARTNER)
-    if (pathname.startsWith("/dashboard")) {
+    // Partner routes require PARTNER role
+    const isPartnerRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/projects") || pathname.startsWith("/profile");
+    if (isPartnerRoute) {
       if (!token) {
         return NextResponse.redirect(new URL("/login", req.url));
+      }
+      if (token.role !== UserRole.PARTNER) {
+        return new NextResponse("Forbidden: Partner access required.", { status: 403 });
       }
     }
 
@@ -51,5 +56,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*"],
+  matcher: ["/admin/:path*", "/dashboard/:path*", "/projects/:path*", "/profile/:path*"],
 };

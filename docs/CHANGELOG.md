@@ -4,7 +4,43 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [Unreleased] — Phase 5 In Progress
+## [Unreleased] — Phase 7 In Progress
+
+---
+
+## [0.7.0] — 2026-08-27 — Phase 6 Project Submission Complete
+
+### Added
+- `src/lib/validations/project.ts` — `projectSubmissionSchema` for robust data validation on incoming projects.
+- `src/app/api/projects/route.ts` — API endpoint for creating new projects with in-memory rate limiting.
+- `src/app/(dashboard)/projects/new/page.tsx` — front-end submission form integrated with `react-hook-form` and custom `zodResolver`.
+- Modified `/dashboard` and `/projects` to include visible Call-to-Action buttons for project submission.
+- Programmatic security test script explicitly designed to verify data boundaries during project creation.
+
+### Security
+- **Strict Ownership:** `POST /api/projects` completely ignores any `partnerId` provided in the payload and exclusively binds newly created projects to the authenticated user derived from `requirePartnerSession()`.
+- **Atomic Concurrency:** Concurrency-safe unique project numbering (`CPJ-XXXXX`) achieved via Prisma `$transaction` and atomic `sequence` upsertion.
+- **Mass Assignment Prevention:** Incoming request bodies are safely parsed using Zod, and explicitly mapped to the `db.project.create` inputs.
+- **Data Filtering:** `POST /api/projects` response explicit `select` returns only `id` and `projectNumber` for navigation, avoiding inadvertent leakage of auto-initialized fields or internal metadata.
+
+---
+
+## [0.6.0] — 2026-08-27 — Phase 5 Partner Dashboard Complete
+
+### Added
+- `requirePartnerSession()` in `src/lib/auth/session.ts` — strict server-side validation of `UserRole.PARTNER` and existence of `Partner` database record.
+- `src/middleware.ts` updated to strictly enforce `PARTNER` role on `/dashboard`, `/projects`, and `/profile`.
+- `src/app/(dashboard)/layout.tsx` — responsive layout with sidebar navigation and mobile top-bar.
+- `/dashboard` overview page showing Partner ID, statistics, and recent projects.
+- `/projects` page for listing all projects owned by the partner.
+- `/profile` page for read-only view of partner account details.
+- Integrated `SignOutButton` using `next-auth/react`.
+
+### Security
+- **IDOR Protection:** `src/app/(dashboard)/projects/[id]/page.tsx` checks `project.partnerId === partner.id` and returns `notFound()` if unauthorized, preventing enumeration of other partners' projects.
+- **Strict Data Pruning:** Explicit `select` objects used in Prisma queries for all partner-facing views.
+- **Admin Data Isolation:** `adminNotes` and `opportunityStatus` are strictly excluded from the partner dashboard queries.
+- **Admin Denial:** `UserRole.ADMIN` accounts are denied access to partner routes, enforcing separation of privileges.
 
 ---
 

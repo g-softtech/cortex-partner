@@ -21,19 +21,17 @@ Read the continuity documentation and verify the actual repository state before 
 
 ## Current Phase
 
-**PHASE 5 — PARTNER DASHBOARD**
+**PHASE 7 — ADMIN DASHBOARD**
 
-Phase 4 (Authentication) is complete.
+Phase 6 (Project Submission) is complete.
 
 ---
 
 ## Current Status
 
-Phase 4 is complete. Authentication is fully operational. Admin login works, partner
-account setup via token works, route protection via middleware is active, and all
-security boundaries have been verified.
+Phase 6 is complete. Partners can now securely submit new project requirements (`/projects/new`), which are stored with safe, atomic server-generated project numbers (`CPJ-XXXXX`) and heavily enforced server-side ownership.
 
-Ready to build Phase 5 — Partner Dashboard.
+Ready to build Phase 7 — Admin Dashboard & Architecture.
 
 ---
 
@@ -74,23 +72,38 @@ Ready to build Phase 5 — Partner Dashboard.
 - Installed `bcryptjs@2.4.3` + `@types/bcryptjs@2.4.6`
 - Middleware (`src/middleware.ts`) already in place protecting `/admin` (ADMIN only) and `/dashboard`
 
+### Phase 5 — COMPLETE
+
+- `src/lib/auth/session.ts` — added `requirePartnerSession()` to verify Partner existence and role
+- `src/middleware.ts` — explicitly enforced `UserRole.PARTNER` on `/dashboard`, `/projects`, `/profile`
+- `src/app/(dashboard)/layout.tsx` — responsive sidebar layout for Partners
+- `/dashboard` — welcome, key statistics, recent projects
+- `/projects` — partner project listing
+- `/projects/[id]` — project detail with strict IDOR checking and Prisma `select` restrictions (no `adminNotes` or `opportunityStatus`)
+- `/profile` — read-only partner information display
+
+### Phase 6 — COMPLETE
+
+- `src/lib/validations/project.ts` — `projectSubmissionSchema` implemented.
+- `src/app/api/projects/route.ts` — strict project submission API. Uses atomic sequence incrementing for `CPJ-XXXXX`, enforces partner ID from session, uses `checkRateLimit`, and filters returned fields.
+- `src/app/(dashboard)/projects/new/page.tsx` — integrated form using `react-hook-form` and custom `zodResolver`.
+- Added "Submit New Project" CTAs to `/dashboard` and `/projects`.
+
 ---
 
 ## What Was Just Completed
 
-Phase 4 Authentication — full credentials login, setup-account flow, bcrypt password hashing,
-interactive admin bootstrap, middleware route protection, role-based redirect after login.
+Phase 6 Project Submission — partners can successfully and securely submit new projects. API securely derives identity from the session and rejects mass assignments.
 
 ---
 
 ## Exact Next Task
 
-**Build Phase 5 — Partner Dashboard:**
+**Build Phase 7 — Admin Dashboard & Architecture:**
 
-1. Create `(dashboard)` route group with layout (sidebar, nav).
-2. Build `/dashboard` page with partner ID, status stats, and quick actions.
-3. Enforce `PARTNER` role in the middleware for `/dashboard`.
-4. Add partner profile page (`/profile`).
+1. Create `(admin)` route group with an admin-specific layout.
+2. Build `/admin` dashboard overview (stats for total projects, total partners).
+3. Build `/admin/projects` to list all submitted projects.
 
 ---
 
@@ -169,10 +182,10 @@ Begin Phase 4: Authentication.
 
 ## SESSION END SUMMARY
 
-**Session:** Phase 4 Authentication — Complete
-**Completed:** bcrypt password hashing in auth options, real login form with role-aware redirect, account setup page and API (atomic token consumption + password hash), interactive admin bootstrap script, all security boundaries verified.
-**Current state:** Phase 4 complete. Ready for Phase 5.
-**Next exact action:** Build the partner dashboard route group with layout, `/dashboard` welcome page, and enforce PARTNER role in middleware.
-**Files changed:** See "Files Recently Modified" above.
-**Tests passed:** `prisma validate`, `tsc --noEmit`, `lint`, `build`, API security tests (401/400 on invalid requests), full token flow (expired/consumed/valid), bcrypt comparison tests.
+**Session:** Phase 6 Project Submission — Complete
+**Completed:** `projectSubmissionSchema`, UI form with RHF, strict `POST /api/projects` route enforcing session partner mapping, atomic CPJ ID generation.
+**Current state:** Phase 6 complete. Ready for Phase 7.
+**Next exact action:** Build Phase 7: Admin layout and basic admin projects overview.
+**Files changed:** `route.ts`, `page.tsx`, `project.ts`, `docs/`.
+**Tests passed:** `prisma validate`, `tsc --noEmit`, `lint`, `build`, programmatic security test preventing mass assignment and IDOR on POST.
 **Known issues:** None open.
