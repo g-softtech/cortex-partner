@@ -1,0 +1,125 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+
+type SetupValues = {
+  password: string;
+  confirmPassword: string;
+};
+
+interface SetupFormProps {
+  token: string;
+}
+
+export default function SetupForm({ token }: SetupFormProps) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError: setFormError,
+  } = useForm<SetupValues>();
+
+  const onSubmit = async (data: SetupValues) => {
+    if (data.password !== data.confirmPassword) {
+      setFormError("confirmPassword", { message: "Passwords do not match." });
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/setup-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, password: data.password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "An error occurred during account setup.");
+      } else {
+        setSuccess(true);
+      }
+    } catch {
+      setError("A network error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="space-y-6">
+        <div className="p-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md">
+          Your password has been successfully set.
+        </div>
+        <button
+          onClick={() => router.push("/login")}
+          className="w-full py-2.5 px-4 bg-slate-900 text-white rounded-md hover:bg-slate-800 transition-colors"
+        >
+          Proceed to Login
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {error && (
+        <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-md">
+          {error}
+        </div>
+      )}
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-slate-700 text-left">
+          New Password
+        </label>
+        <input
+          {...register("password", { 
+            required: "Password is required.", 
+            minLength: { value: 8, message: "Password must be at least 8 characters long." }
+          })}
+          type="password"
+          disabled={isLoading}
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300"
+        />
+        {errors.password && (
+          <p className="text-sm text-red-600 text-left">{errors.password.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-slate-700 text-left">
+          Confirm Password
+        </label>
+        <input
+          {...register("confirmPassword", { required: "Please confirm your password." })}
+          type="password"
+          disabled={isLoading}
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300"
+        />
+        {errors.confirmPassword && (
+          <p className="text-sm text-red-600 text-left">{errors.confirmPassword.message}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full py-2.5 px-4 bg-slate-900 text-white rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 disabled:opacity-50 transition-colors"
+      >
+        {isLoading ? "Saving..." : "Set Password"}
+      </button>
+    </form>
+  );
+}

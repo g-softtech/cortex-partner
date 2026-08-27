@@ -1,0 +1,416 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+enum UserRole {
+  ADMIN
+  PARTNER
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  MORE_INFORMATION
+  DECLINED
+}
+
+enum PartnerStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ProjectType {
+  WEBSITE
+  ECOMMERCE
+  WEB_APP
+  CUSTOM_SOFTWARE
+  MOBILE_APP
+  SAAS
+  BUSINESS_MANAGEMENT
+  AUTOMATION
+  OTHER
+}
+
+enum OpportunityStatus {
+  HIGH
+  MEDIUM
+  LOW
+  UNKNOWN
+}
+
+enum ProjectStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  PRICED
+  PROPOSAL_SENT
+  WON
+  KICKOFF_SUBMITTED
+  READY_FOR_DEVELOPMENT
+  DEVELOPMENT
+  INTERNAL_QA
+  PARTNER_REVIEW
+  CUSTOMER_REVIEW
+  CHANGES
+  FINAL_APPROVAL
+  DELIVERED
+  SUPPORT
+  LOST
+  CANCELLED
+  ARCHIVED
+}
+
+enum KickoffStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  INFORMATION_REQUIRED
+  APPROVED
+}
+
+enum RequestStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  IN_SCOPE
+  ADDITIONAL_WORK
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+enum SupportCategory {
+  BUG
+  TECHNICAL_ISSUE
+  QUESTION
+  PROJECT_SUPPORT
+  OTHER
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_ON_PARTNER
+  RESOLVED
+  CLOSED
+}
+
+enum NotificationType {
+  PROJECT_UPDATE
+  KICKOFF_UPDATE
+  CHANGE_REQUEST_UPDATE
+  SUPPORT_UPDATE
+  SYSTEM
+  APPLICATION_UPDATE
+}
+
+// ==========================================
+// SYSTEM / UTILITY MODELS
+// ==========================================
+// Concurrency-safe readable ID generation (CP-XXXXX, CPJ-XXXXX)
+model Sequence {
+  id    String @id // e.g., "PARTNER", "PROJECT", "APPLICATION", "SUPPORT"
+  value Int    @default(0)
+}
+
+// ==========================================
+// AUTHENTICATION & CORE USER MODELS
+// ==========================================
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  password      String?   // Hashed via bcrypt
+  image         String?
+  role          UserRole  @default(PARTNER)
+  
+  partner       Partner?
+  setupTokens   AccountSetupToken[]
+  
+  // NextAuth models
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Strict Ownership Relations
+  auditLogs       AuditLog[] 
+  uploadedFiles   ProjectFile[] 
+  changeFiles     ChangeRequestFile[]
+  notifications   Notification[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model AccountSetupToken {
+  id          String   @id @default(cuid())
+  tokenHash   String   @unique // Stored hashed, never plaintext
+  userId      String
+  expiresAt   DateTime
+  consumedAt  DateTime? // Marks as used instead of hard-deleting
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+}
+
+// ==========================================
+// PARTNER MANAGEMENT
+// ==========================================
+model PartnerApplication {
+  id                  String   @id @default(cuid())
+  applicationNumber   String   @unique 
+  name                String
+  email               String   // Removed @unique to allow reapplications if declined
+  phone               String
+  occupation          String
+  hasPotentialClients Boolean
+  potentialClientType String?
+  reason              String   @db.Text
+  source              String?
+  status              ApplicationStatus @default(PENDING)
+  
+  partner             Partner? // Preserves the relationship to the generated Partner
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  @@index([email])
+  @@index([status])
+}
+
+model Partner {
+  id                    String   @id @default(cuid())
+  partnerId             String   @unique // Human readable CP-XXXXX
+  userId                String   @unique
+  partnerApplicationId  String?  @unique // Link to original application
+  status                PartnerStatus @default(ACTIVE)
+  joinedAt              DateTime @default(now())
+  
+  // Relations: Restrict deletes to prevent accidental data loss
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  application           PartnerApplication? @relation(fields: [partnerApplicationId], references: [id], onDelete: SetNull)
+  projects              Project[]
+  supportRequests       SupportRequest[]
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+// ==========================================
+// PROJECT WORKFLOW
+// ==========================================
+model Project {
+  id                String   @id @default(cuid())
+  projectNumber     String   @unique // CPJ-XXXXX
+  partnerId         String
+  
+  // Public/Partner Facing Info
+  projectType       ProjectType
+  description       String   @db.Text
+  features          String   @db.Text
+  budget            String?
+  timeline          String?
+  opportunityStatus OpportunityStatus @default(UNKNOWN)
+  projectStatus     ProjectStatus @default(SUBMITTED)
+  
+  // Private Financials (Decimal to avoid float rounding errors)
+  partnerPrice      Decimal? @db.Decimal(12, 2)
+  estimatedTimeline String?
+  scope             String?  @db.Text
+  
+  // Internal Admin Notes (Never exposed)
+  adminNotes        String?  @db.Text 
+  
+  // Relations (Restricted deletion to preserve history)
+  partner           Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  kickoff           ProjectKickoff?
+  files             ProjectFile[]
+  changeRequests    ChangeRequest[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([partnerId])
+  @@index([projectStatus])
+}
+
+model ProjectKickoff {
+  id          String   @id @default(cuid())
+  projectId   String   @unique
+  status      KickoffStatus @default(DRAFT)
+  
+  // Metadata for auditing the workflow
+  submittedAt DateTime?
+  reviewedAt  DateTime?
+  reviewedBy  String?  // Admin User ID
+  approvedAt  DateTime?
+  
+  businessName        String
+  businessDescription String @db.Text
+  primaryColor        String?
+  secondaryColor      String?
+  brandGuidelines     String? @db.Text
+  contentAbout        String? @db.Text
+  contentServices     String? @db.Text
+  contentProducts     String? @db.Text
+  contactInfo         String? @db.Text
+  socialLinks         String? @db.Text
+  requiredPages       String? @db.Text
+  agreedFeatures      String? @db.Text
+  integrations        String? @db.Text
+  domain              String?
+  hostingStatus       String?
+  designReferences    String? @db.Text
+  
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==========================================
+// FILES & ATTACHMENTS
+// ==========================================
+model ProjectFile {
+  id               String   @id @default(cuid())
+  fileName         String
+  originalName     String
+  fileType         String   // MIME type
+  fileSize         Int
+  category         String   // LOGO, IMAGE, DOCUMENT, etc.
+  storageReference String   @unique // R2 Key
+  
+  projectId        String
+  uploadedById     String   // Explicit User relation
+  
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  uploadedBy       User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  
+  createdAt        DateTime @default(now())
+  
+  @@index([projectId])
+  @@index([uploadedById])
+}
+
+model ChangeRequestFile {
+  id               String   @id @default(cuid())
+  fileName         String
+  originalName     String
+  fileType         String
+  fileSize         Int
+  storageReference String   @unique
+  
+  changeRequestId  String
+  uploadedById     String
+  
+  changeRequest    ChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Restrict)
+  uploadedBy       User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  
+  createdAt        DateTime @default(now())
+}
+
+// ==========================================
+// SUPPORT & MAINTENANCE
+// ==========================================
+model ChangeRequest {
+  id          String   @id @default(cuid())
+  description String   @db.Text
+  explanation String?  @db.Text
+  status      RequestStatus @default(SUBMITTED)
+  
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  files       ChangeRequestFile[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([projectId])
+}
+
+model SupportRequest {
+  id            String   @id @default(cuid())
+  supportNumber String   @unique // SUP-XXXXX
+  category      SupportCategory
+  subject       String
+  description   String   @db.Text
+  status        SupportStatus @default(OPEN)
+  
+  partnerId     String 
+  partner       Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([partnerId])
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  title       String
+  message     String   @db.Text
+  read        Boolean  @default(false)
+  type        NotificationType
+  
+  userId      String   
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  @@index([userId])
+}
+
+// ==========================================
+// AUDITING
+// ==========================================
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String   
+  entityType  String   
+  entityId    String
+  metadata    Json?    // Structured JSON instead of arbitrary text
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([entityType, entityId])
+}

@@ -1,0 +1,178 @@
+# Cortex Partner Program — AI Handoff
+
+## ⚠️ READ THIS FIRST
+
+This project is **already under development**. Do NOT restart it.
+
+Do NOT:
+- Redo Phase 0 or Phase 1.
+- Reinitialize the repository
+- Recreate `package.json`
+- Reset the database
+- Delete migrations
+- Replace working architecture
+- Start from Phase 1
+- Install a new dependency simply because it is the latest version. Any new dependency must go through the existing stability/compatibility check.
+
+Instead: **READ → VERIFY → CONTINUE**
+Read the continuity documentation and verify the actual repository state before making changes.
+
+---
+
+## Current Phase
+
+**PHASE 5 — PARTNER DASHBOARD**
+
+Phase 4 (Authentication) is complete.
+
+---
+
+## Current Status
+
+Phase 4 is complete. Authentication is fully operational. Admin login works, partner
+account setup via token works, route protection via middleware is active, and all
+security boundaries have been verified.
+
+Ready to build Phase 5 — Partner Dashboard.
+
+---
+
+## What Has Been Completed
+
+### Phase 0 — COMPLETE
+
+- Repository initialized with `create-next-app@14.2.15`
+- Stable dependency stack frozen and pinned (see ARCHITECTURE.md)
+- `package-lock.json` generated and committed
+- `.nvmrc` → Node `22.16.0`
+- `package.json` engines → Node `22.16.0`
+- `.env.example` → placeholders only
+- `.gitignore` → `.env` excluded from Git
+- `prisma/schema.prisma` → full approved schema with all models, enums, FK constraints
+- Schema validated (`npx prisma validate` ✅)
+- Migration `20260826220002_init` applied to Neon dev database (`cortex_partner_dev`)
+- Prisma Client v5.21.0 generated
+- All docs/ continuity files created and populated
+
+### Phase 1 — COMPLETE
+
+- `src/lib/db/index.ts` (Prisma Client singleton)
+- `src/lib/validations/partner.ts` (Zod schema for applications)
+- `src/lib/services/rate-limit.ts` (In-memory abuse protection)
+- `src/app/api/partners/apply/route.ts` (Application creation with atomic Sequence increment)
+- `/` (Landing page)
+- `/apply` (Application form)
+- `/application-success` (Success page)
+
+### Phase 4 — COMPLETE
+
+- `src/lib/auth/options.ts` — real bcrypt password verification via DB lookup
+- `src/app/api/auth/setup-account/route.ts` — token validation + atomic password-set endpoint
+- `src/app/(public)/login/page.tsx` + `LoginForm.tsx` — real credentials login form with role-aware redirect
+- `src/app/(public)/setup-account/page.tsx` + `SetupForm.tsx` — account setup UI consuming the setup token
+- `scripts/bootstrap-admin.ts` — interactive admin bootstrap script (hidden password prompt, no shell history exposure)
+- Installed `bcryptjs@2.4.3` + `@types/bcryptjs@2.4.6`
+- Middleware (`src/middleware.ts`) already in place protecting `/admin` (ADMIN only) and `/dashboard`
+
+---
+
+## What Was Just Completed
+
+Phase 4 Authentication — full credentials login, setup-account flow, bcrypt password hashing,
+interactive admin bootstrap, middleware route protection, role-based redirect after login.
+
+---
+
+## Exact Next Task
+
+**Build Phase 5 — Partner Dashboard:**
+
+1. Create `(dashboard)` route group with layout (sidebar, nav).
+2. Build `/dashboard` page with partner ID, status stats, and quick actions.
+3. Enforce `PARTNER` role in the middleware for `/dashboard`.
+4. Add partner profile page (`/profile`).
+
+---
+
+## Files Recently Modified
+
+- `src/lib/auth/options.ts`
+- `src/app/api/auth/setup-account/route.ts`
+- `src/app/(public)/login/page.tsx`
+- `src/app/(public)/login/LoginForm.tsx`
+- `src/app/(public)/setup-account/page.tsx`
+- `src/app/(public)/setup-account/SetupForm.tsx`
+- `scripts/bootstrap-admin.ts`
+- `scripts/test-token-flow.ts`
+- `scripts/verify-db.ts`
+- `docs/PROJECT_STATUS.md`
+- `docs/CHANGELOG.md`
+- `docs/AI_HANDOFF.md`
+- `docs/ROADMAP.md`
+
+---
+
+## Database Changes
+
+- (No schema changes. Migrations up-to-date)
+
+---
+
+## Known Issues
+
+*(None currently open)*
+
+### KI-002 — Next.js SWC binary (resolved)
+- The SWC native binary for win32/x64 failed to load initially.
+- Resolved by reinstalling `@next/swc-win32-x64-msvc` with `--force`.
+
+---
+
+## Tests Passed
+
+- `npx prisma validate` ✅
+- `npx tsc --noEmit` ✅
+- `npm run lint` ✅
+- `npm run build` ✅
+
+## Tests Not Yet Run
+
+- (All foundation tests have been successfully run)
+
+---
+
+## Things NOT To Change
+
+- The frozen dependency versions in `package.json`
+- The Prisma schema (unless a new migration is needed)
+- The migration `20260826220002_init` (already applied to live database)
+- The database connection strategy (standard Prisma TCP, no adapters)
+- The docs/ continuity system structure
+
+---
+
+## Important Decisions
+
+1. **Standard Prisma connection** — No `@prisma/adapter-neon`. Standard TCP is simpler and safer for Node.js Serverless.
+2. **Credentials provider** — Not Magic Link. Partners set their own password via setup token.
+3. **No `@unique` on `PartnerApplication.email`** — allows reapplication after decline.
+4. **`RESTRICT` onDelete** — business records are preserved, not deleted.
+5. **`DECIMAL(12,2)` for partnerPrice** — never Float for financial data.
+
+---
+
+## Recommended Next Action
+
+Begin Phase 4: Authentication. 
+
+---
+
+## SESSION END SUMMARY
+
+**Session:** Phase 4 Authentication — Complete
+**Completed:** bcrypt password hashing in auth options, real login form with role-aware redirect, account setup page and API (atomic token consumption + password hash), interactive admin bootstrap script, all security boundaries verified.
+**Current state:** Phase 4 complete. Ready for Phase 5.
+**Next exact action:** Build the partner dashboard route group with layout, `/dashboard` welcome page, and enforce PARTNER role in middleware.
+**Files changed:** See "Files Recently Modified" above.
+**Tests passed:** `prisma validate`, `tsc --noEmit`, `lint`, `build`, API security tests (401/400 on invalid requests), full token flow (expired/consumed/valid), bcrypt comparison tests.
+**Known issues:** None open.
