@@ -1,4 +1,12 @@
 ## [Unreleased]
+- **Phase 8: Project Kickoff**
+  - Added AWS SDK S3 clients for Cloudflare R2 file uploads/downloads
+  - Built direct-to-S3 presigned URL generation with IDOR ownership validation
+  - Implemented Atomic Proposal Acceptance (`PROPOSAL_SENT` → `WON` + `DRAFT` kickoff)
+  - Created interactive Partner Kickoff form with auto-save and file uploads
+  - Created Admin Review interface for project kickoffs
+  - Extended static security tests in `test-phase8-security.ts`
+
 - **Phase 7: Admin Project Assessment**
   - Added strict assessment API route (`PATCH /api/admin/projects/[id]/assess`)
   - Admin-only navigation additions for projects

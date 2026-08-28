@@ -3,10 +3,13 @@ import { requirePartnerSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { ProjectStatus, ProjectType } from "@prisma/client";
 import Link from "next/link";
+import { AcceptProposalButton } from "./AcceptProposalButton";
 
 export const metadata = {
   title: "Project Details | Cortex Partner Program",
 };
+
+export const dynamic = "force-dynamic";
 
 const STATUS_LABELS: Partial<Record<ProjectStatus, string>> = {
   SUBMITTED: "Submitted",
@@ -35,6 +38,8 @@ const STATUS_COLORS: Partial<Record<ProjectStatus, string>> = {
   PRICED: "bg-purple-100 text-purple-800",
   PROPOSAL_SENT: "bg-indigo-100 text-indigo-800",
   WON: "bg-green-100 text-green-800",
+  KICKOFF_SUBMITTED: "bg-teal-100 text-teal-800",
+  READY_FOR_DEVELOPMENT: "bg-cyan-100 text-cyan-800",
   DEVELOPMENT: "bg-sky-100 text-sky-800",
   DELIVERED: "bg-green-100 text-green-800",
   LOST: "bg-red-100 text-red-800",
@@ -53,6 +58,23 @@ const TYPE_LABELS: Record<ProjectType, string> = {
   OTHER: "Other",
 };
 
+// Statuses where the partner is allowed to see pricing/scope/timeline
+const PROPOSAL_VISIBLE_STATUSES: ProjectStatus[] = [
+  ProjectStatus.PROPOSAL_SENT,
+  ProjectStatus.WON,
+  ProjectStatus.KICKOFF_SUBMITTED,
+  ProjectStatus.READY_FOR_DEVELOPMENT,
+  ProjectStatus.DEVELOPMENT,
+  ProjectStatus.INTERNAL_QA,
+  ProjectStatus.PARTNER_REVIEW,
+  ProjectStatus.CUSTOMER_REVIEW,
+  ProjectStatus.CHANGES,
+  ProjectStatus.FINAL_APPROVAL,
+  ProjectStatus.DELIVERED,
+  ProjectStatus.SUPPORT,
+  ProjectStatus.ARCHIVED,
+];
+
 export default async function ProjectDetailPage({
   params,
 }: {
@@ -61,8 +83,7 @@ export default async function ProjectDetailPage({
   // Enforce PARTNER role — throws if ADMIN or unauthenticated
   const { partner } = await requirePartnerSession().catch(() => notFound());
 
-  // STRICTLY select partner-visible fields.
-  // adminNotes and opportunityStatus are NEVER selected — they do not exist in the result.
+  // Fetch project — explicit select, never include adminNotes or opportunityStatus
   const project = await db.project.findUnique({
     where: { id: params.id },
     select: {
@@ -79,16 +100,23 @@ export default async function ProjectDetailPage({
       scope: true,
       createdAt: true,
       updatedAt: true,
-      // Fetch partnerId for ownership check only
       partnerId: true,
+      kickoff: { select: { id: true, status: true } },
     },
   });
 
-  // Not found or IDOR check: the project must belong to this partner.
-  // Return 404 (not 403) to avoid confirming the existence of other partners' projects.
+  // IDOR: return 404 (not 403) to avoid confirming existence of other partners' projects
   if (!project || project.partnerId !== partner.id) {
     notFound();
   }
+
+  // Only reveal proposal details once status is PROPOSAL_SENT or later
+  const showProposal = PROPOSAL_VISIBLE_STATUSES.includes(project.projectStatus);
+  const canAcceptProposal = project.projectStatus === ProjectStatus.PROPOSAL_SENT;
+  const hasKickoff = !!project.kickoff;
+  const canEditKickoff =
+    hasKickoff &&
+    (project.kickoff!.status === "DRAFT" || project.kickoff!.status === "INFORMATION_REQUIRED");
 
   return (
     <div className="space-y-6">
@@ -116,83 +144,104 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
+      {/* Accept Proposal Banner — only shown when PROPOSAL_SENT */}
+      {canAcceptProposal && (
+        <AcceptProposalButton
+          projectId={project.id}
+          projectNumber={project.projectNumber}
+        />
+      )}
+
+      {/* Kickoff Actions — shown after acceptance */}
+      {hasKickoff && (
+        <div className="rounded-lg border bg-white p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900">Project Kickoff</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Status:{" "}
+                <span className="font-medium capitalize text-slate-700">
+                  {project.kickoff!.status.replace(/_/g, " ")}
+                </span>
+              </p>
+            </div>
+            {canEditKickoff && (
+              <Link
+                href={`/projects/${project.id}/kickoff`}
+                className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+              >
+                {project.kickoff!.status === "DRAFT" ? "Complete Kickoff" : "Update Kickoff"}
+              </Link>
+            )}
+            {project.kickoff!.status === "SUBMITTED" && (
+              <span className="text-sm text-slate-500 italic">Awaiting Cortex review…</span>
+            )}
+            {project.kickoff!.status === "APPROVED" && (
+              <span className="text-sm font-medium text-green-700">✓ Kickoff Approved</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Project Details */}
       <div className="rounded-lg border bg-white p-6">
         <h2 className="mb-4 text-base font-semibold text-slate-900">Project Details</h2>
         <dl className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-              Project Type
-            </dt>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Project Type</dt>
             <dd className="mt-1 text-slate-900">{TYPE_LABELS[project.projectType]}</dd>
           </div>
           {project.budget && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-                Budget
-              </dt>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Budget</dt>
               <dd className="mt-1 text-slate-900">{project.budget}</dd>
             </div>
           )}
           {project.timeline && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-                Desired Timeline
-              </dt>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Desired Timeline</dt>
               <dd className="mt-1 text-slate-900">{project.timeline}</dd>
             </div>
           )}
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-              Submitted
-            </dt>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Submitted</dt>
             <dd className="mt-1 text-slate-900">
               {new Date(project.createdAt).toLocaleDateString("en-GB", { dateStyle: "long" })}
             </dd>
           </div>
           <div className="sm:col-span-2">
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-              Description
-            </dt>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Description</dt>
             <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.description}</dd>
           </div>
           <div className="sm:col-span-2">
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-              Requested Features
-            </dt>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Requested Features</dt>
             <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.features}</dd>
           </div>
         </dl>
       </div>
 
-      {/* Cortex Assessment (only shown if available) */}
-      {(project.partnerPrice || project.estimatedTimeline || project.scope) && (
-        <div className="rounded-lg border bg-white p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">Cortex Assessment</h2>
+      {/* Cortex Proposal — ONLY shown when status is PROPOSAL_SENT or later */}
+      {showProposal && (project.partnerPrice || project.estimatedTimeline || project.scope) && (
+        <div className="rounded-lg border border-indigo-100 bg-indigo-50 p-6">
+          <h2 className="mb-4 text-base font-semibold text-indigo-900">Cortex Proposal</h2>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
             {project.partnerPrice !== null && (
               <div>
-                <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-                  Partner Price
-                </dt>
-                <dd className="mt-1 font-semibold text-slate-900">
+                <dt className="text-xs font-medium uppercase tracking-widest text-indigo-600">Partner Price</dt>
+                <dd className="mt-1 text-lg font-bold text-indigo-900">
                   £{project.partnerPrice.toFixed(2)}
                 </dd>
               </div>
             )}
             {project.estimatedTimeline && (
               <div>
-                <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-                  Estimated Timeline
-                </dt>
-                <dd className="mt-1 text-slate-900">{project.estimatedTimeline}</dd>
+                <dt className="text-xs font-medium uppercase tracking-widest text-indigo-600">Estimated Timeline</dt>
+                <dd className="mt-1 font-semibold text-indigo-900">{project.estimatedTimeline}</dd>
               </div>
             )}
             {project.scope && (
               <div className="sm:col-span-2">
-                <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
-                  Scope
-                </dt>
+                <dt className="text-xs font-medium uppercase tracking-widest text-indigo-600">Scope</dt>
                 <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.scope}</dd>
               </div>
             )}

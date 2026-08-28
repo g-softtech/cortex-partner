@@ -20,16 +20,16 @@ Read the continuity documentation and verify the actual repository state before 
 ---
 
 ## Current State
-**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, and 7.
-**NEXT TASK:** Phase 8 — Project Kickoff (See `docs/ROADMAP.md`)
+**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, and 8.
+**NEXT TASK:** Phase 9 — Development Workflow (See `docs/ROADMAP.md`)
 
 ---
 
 ## Current Status
 
-Phase 6 is complete. Partners can now securely submit new project requirements (`/projects/new`), which are stored with safe, atomic server-generated project numbers (`CPJ-XXXXX`) and heavily enforced server-side ownership.
+Phase 8 is complete. Partners can now accept project proposals, which atomically updates the project state and creates a kickoff draft. Partners can fill out the kickoff form and upload files securely to Cloudflare R2 via presigned URLs. Admins can review and approve kickoffs.
 
-Ready to build Phase 7 — Admin Dashboard & Architecture.
+Ready to build Phase 9 — Development Workflow.
 
 ---
 

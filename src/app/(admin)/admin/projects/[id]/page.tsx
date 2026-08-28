@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { ProjectStatus, OpportunityStatus } from "@prisma/client";
 import Link from "next/link";
 import { AssessmentForm } from "./AssessmentForm";
+import { KickoffReviewPanel } from "./KickoffReviewPanel";
 
 export const metadata = {
   title: "Project Detail | Cortex Admin",
@@ -87,6 +88,43 @@ export default async function AdminProjectDetailPage({
           joinedAt: true,
           user: { select: { name: true, email: true } },
         },
+      },
+      kickoff: {
+        select: {
+          id: true,
+          status: true,
+          submittedAt: true,
+          reviewedAt: true,
+          reviewedBy: true,
+          approvedAt: true,
+          businessName: true,
+          businessDescription: true,
+          primaryColor: true,
+          secondaryColor: true,
+          brandGuidelines: true,
+          contentAbout: true,
+          contentServices: true,
+          contentProducts: true,
+          contactInfo: true,
+          socialLinks: true,
+          requiredPages: true,
+          agreedFeatures: true,
+          integrations: true,
+          domain: true,
+          hostingStatus: true,
+          designReferences: true,
+        },
+      },
+      files: {
+        select: {
+          id: true,
+          originalName: true,
+          fileType: true,
+          fileSize: true,
+          category: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
       },
     },
   });
@@ -232,6 +270,15 @@ export default async function AdminProjectDetailPage({
           currentOpportunityStatus={project.opportunityStatus}
         />
       </div>
+
+      {/* Kickoff Review Panel — shown when a kickoff exists */}
+      {project.kickoff && (
+        <KickoffReviewPanel
+          projectId={project.id}
+          kickoff={project.kickoff}
+          files={project.files}
+        />
+      )}
     </div>
   );
 }

@@ -172,16 +172,16 @@ The Cortex Partner Program is built in incremental phases. Each phase must be ve
 
 ---
 
-## PHASE 8 — PROJECT KICKOFF
+## PHASE 8 — PROJECT KICKOFF ✅ COMPLETE
 
 **Objective:** Once a project is WON, Partner submits full project details.
 
 ### Tasks
-- [ ] Partner marks project as WON (`PROPOSAL_SENT → WON`)
-- [ ] Kickoff form unlocks (`/projects/[id]/kickoff`)
-- [ ] File uploads to Cloudflare R2
-- [ ] Admin reviews kickoff
-- [ ] Admin approves or requests more information
+- [x] Partner marks project as WON (`PROPOSAL_SENT → WON`)
+- [x] Kickoff form unlocks (`/projects/[id]/kickoff`)
+- [x] File uploads to Cloudflare R2
+- [x] Admin reviews kickoff
+- [x] Admin approves or requests more information
 
 ### Dependencies
 - Phase 7 complete
