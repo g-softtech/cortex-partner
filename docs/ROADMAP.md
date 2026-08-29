@@ -203,29 +203,29 @@ The Cortex Partner Program is built in incremental phases. Each phase must be ve
 
 ---
 
-## PHASE 10 — CHANGE REQUESTS
+## PHASE 10 — CHANGE REQUESTS ✅ COMPLETE
 
 **Objective:** Partner can submit change requests post-delivery.
 
 ### Tasks
-- [ ] `/projects/[id]/changes` — submit change request
-- [ ] File attachments on change requests
-- [ ] Admin handles: IN_SCOPE, ADDITIONAL_WORK, etc.
+- [x] `/projects/[id]/changes` — submit change request
+- [x] File attachments on change requests
+- [x] Admin handles: IN_SCOPE, ADDITIONAL_WORK, etc.
 
 ### Dependencies
 - Phase 9 complete
 
 ---
 
-## PHASE 11 — NOTIFICATIONS
+## PHASE 11 — NOTIFICATIONS ✅ COMPLETE
 
 **Objective:** In-app and email notifications for key events.
 
 ### Tasks
-- [ ] In-app notification system
-- [ ] Email via Resend (Resend API key configured)
-- [ ] Partner event notifications
-- [ ] Admin event notifications
+- [x] In-app notification system
+- [x] Email via Resend (Resend API key configured)
+- [x] Partner event notifications
+- [x] Admin event notifications
 
 ### Dependencies
 - Phase 10 complete

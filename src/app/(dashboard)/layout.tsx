@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth/session";
 import { UserRole } from "@prisma/client";
 import Link from "next/link";
 import { SignOutButton } from "./SignOutButton";
+import { NotificationDropdown } from "@/components/ui/NotificationDropdown";
 
 export default async function DashboardLayout({
   children,
@@ -46,9 +47,12 @@ export default async function DashboardLayout({
           </Link>
         </nav>
         <div className="border-t p-4">
-          <div className="mb-4 px-3">
-            <p className="truncate text-sm font-medium text-slate-900">{session.user.name}</p>
-            <p className="truncate text-xs text-slate-500">{session.user.email}</p>
+          <div className="mb-4 px-3 flex items-center justify-between">
+            <div className="overflow-hidden">
+              <p className="truncate text-sm font-medium text-slate-900">{session.user.name}</p>
+              <p className="truncate text-xs text-slate-500">{session.user.email}</p>
+            </div>
+            <NotificationDropdown />
           </div>
           <SignOutButton />
         </div>
@@ -59,18 +63,21 @@ export default async function DashboardLayout({
         <Link href="/dashboard" className="font-bold text-slate-900">
           Cortex Partner
         </Link>
-        {/* Simple Mobile Navigation Links for now */}
-        <nav className="flex items-center gap-4 text-sm font-medium">
-          <Link href="/dashboard" className="text-slate-600 hover:text-slate-900">
-            Home
-          </Link>
-          <Link href="/projects" className="text-slate-600 hover:text-slate-900">
-            Projects
-          </Link>
-          <Link href="/profile" className="text-slate-600 hover:text-slate-900">
-            Profile
-          </Link>
-        </nav>
+        <div className="flex items-center gap-2">
+          <NotificationDropdown />
+          {/* Simple Mobile Navigation Links for now */}
+          <nav className="flex items-center gap-4 text-sm font-medium">
+            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900">
+              Home
+            </Link>
+            <Link href="/projects" className="text-slate-600 hover:text-slate-900">
+              Projects
+            </Link>
+            <Link href="/profile" className="text-slate-600 hover:text-slate-900">
+              Profile
+            </Link>
+          </nav>
+        </div>
       </header>
 
       {/* Main Content */}

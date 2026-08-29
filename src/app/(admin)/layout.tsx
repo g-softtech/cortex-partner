@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireAdminSession } from "@/lib/auth/session";
 import Link from "next/link";
+import { NotificationDropdown } from "@/components/ui/NotificationDropdown";
 
 /**
  * Admin route group layout.
@@ -39,7 +40,10 @@ export default async function AdminLayout({
             </Link>
           </nav>
         </div>
-        <span className="text-xs text-slate-400 uppercase tracking-widest">Admin Panel</span>
+        <div className="flex items-center gap-4">
+          <NotificationDropdown />
+          <span className="text-xs text-slate-400 uppercase tracking-widest hidden sm:inline-block">Admin Panel</span>
+        </div>
       </header>
 
       <main className="p-6">{children}</main>

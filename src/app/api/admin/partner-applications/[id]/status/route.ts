@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdminSession, isAuthError } from "@/lib/auth/session";
-import { ApplicationStatus, UserRole } from "@prisma/client";
+import { ApplicationStatus, UserRole, NotificationType } from "@prisma/client";
 import { z } from "zod";
 import crypto from "crypto";
+import { notifyUser } from "@/lib/notifications";
 
 /**
  * PATCH /api/admin/partner-applications/[id]/status
@@ -129,6 +130,21 @@ export async function PATCH(
     },
   });
 
+  const dispatchEmail = await notifyUser({
+    tx: db, // we are not in a transaction here, but notifyUser accepts PrismaClient
+    userId: "SYSTEM_NO_USER", // We don't have a user ID for declined applicants
+    type: NotificationType.APPLICATION_UPDATE,
+    title: "Application Status Update",
+    message: `Your application has been updated to ${newStatus}.`,
+    email: {
+      to: application.email,
+      subject: "Cortex Partner Program - Application Status",
+      html: `<p>Hi ${application.name},</p><p>Your application status has been updated to <strong>${newStatus.replace(/_/g, " ")}</strong>.</p>`,
+    }
+  }, true); // skip in-app notification since they aren't a user
+
+  dispatchEmail();
+
   return NextResponse.json({
     success: true,
     applicationNumber: updated.applicationNumber,
@@ -219,8 +235,30 @@ async function handleApproval(
         },
       });
 
-      return { partner, updatedApplication, userId: user.id };
+      // 6. Notify user
+      const setupUrl = `${process.env.NEXT_PUBLIC_APP_URL}/setup-account?token=${plainToken}`;
+      const dispatchEmail = await notifyUser({
+        tx,
+        userId: user.id,
+        type: NotificationType.APPLICATION_UPDATE,
+        title: "Application Approved",
+        message: "Welcome to the Cortex Partner Program! Check your email to set up your account.",
+        email: {
+          to: email,
+          subject: "Welcome to the Cortex Partner Program - Setup Your Account",
+          html: `<p>Hi ${name},</p>
+          <p>Congratulations! Your application to the Cortex Partner Program has been approved.</p>
+          <p>Please click the link below to set up your account password and access the dashboard:</p>
+          <a href="${setupUrl}">Set up my account</a>
+          <p>This link expires in 72 hours.</p>`,
+        }
+      });
+
+      return { partner, updatedApplication, userId: user.id, dispatchEmail };
     });
+
+    // Execute the async email dispatch after transaction succeeds
+    result.dispatchEmail();
 
     // Return safe summary — plaintext token returned ONCE for Phase 4 email dispatch
     // It will never be stored or retrievable again after this response

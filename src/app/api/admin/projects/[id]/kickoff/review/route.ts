@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requireAdminSession, isAuthError } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { z } from "zod";
-import { KickoffStatus } from "@prisma/client";
+import { KickoffStatus, NotificationType } from "@prisma/client";
+import { notifyUser } from "@/lib/notifications";
 
 const reviewSchema = z.object({
   decision: z.enum(["APPROVED", "INFORMATION_REQUIRED"]),
@@ -57,8 +58,15 @@ export async function PATCH(
     where: { id: params.id },
     select: {
       id: true,
+      projectNumber: true,
       projectStatus: true,
       kickoff: { select: { id: true, status: true } },
+      partner: {
+        select: {
+          userId: true,
+          user: { select: { email: true, name: true } }
+        }
+      }
     },
   });
 
@@ -86,7 +94,7 @@ export async function PATCH(
     : KickoffStatus.INFORMATION_REQUIRED;
 
   try {
-    await db.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx) => {
       // Concurrency-safe kickoff update
       const updated = await tx.projectKickoff.updateMany({
         where: { id: project.kickoff!.id, status: KickoffStatus.SUBMITTED },
@@ -133,7 +141,34 @@ export async function PATCH(
           },
         },
       });
+
+      // Notify Partner
+      let dispatchEmail = () => {};
+      
+      const title = decision === "APPROVED" ? "Kickoff Approved" : "Kickoff Needs Information";
+      const message = decision === "APPROVED" 
+        ? `Your kickoff for project ${project.projectNumber} has been approved.` 
+        : `Your kickoff for project ${project.projectNumber} requires more information.`;
+      
+      dispatchEmail = await notifyUser({
+        tx,
+        userId: project.partner.userId,
+        type: NotificationType.KICKOFF_UPDATE,
+        title,
+        message,
+        email: {
+          to: project.partner.user.email,
+          subject: `Cortex Partner - ${title}`,
+          html: `<p>Hi ${project.partner.user.name},</p>
+          <p>${message}</p>
+          <p>Please log in to your dashboard to review the details.</p>`,
+        }
+      });
+
+      return { dispatchEmail };
     });
+
+    result.dispatchEmail();
 
     return NextResponse.json({
       success: true,

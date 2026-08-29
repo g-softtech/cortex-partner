@@ -17,18 +17,18 @@ Do NOT:
 
 ## Status Overview
 
-**Current Phase:** Phase 11 - Production Deployment Readiness (Next)
-**Last Completed:** Phase 10 - Change Requests (Post-Launch)
+**Current Phase:** Phase 12 - Support (Next)
+**Last Completed:** Phase 11 - Notifications
 **Date:** 2026-08-29
 
-**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, and 10.
+**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, and 11.
 
 ---
 
 ## What Was Just Completed
 
-**Phase 10: Change Requests**
-Partners can now submit Change Requests against `DELIVERED` or `SUPPORT` projects. These requests support file attachments securely uploaded directly to R2 via presigned URLs. Strict relational validation ensures partners can only attach files to Change Requests they own, through projects they own. Admins can update the status of Change Requests and provide explanations.
+**Phase 11: Notifications**
+Implemented a centralized notification system (`notifyUser` and `notifyAdmins`) providing both in-app records and robust asynchronous Resend email dispatches. Notification records are committed alongside database transitions, and emails are fired safely afterwards to avoid reverting business logic on network failures. Added `NotificationDropdown` to admin and partner navigations.
 
 ---
 
@@ -41,7 +41,7 @@ Partners can now submit Change Requests against `DELIVERED` or `SUPPORT` project
 *   **Schema:** The Prisma schema is **FROZEN**. New data requirements must fit into existing JSON fields or `AuditLog.metadata`.
 *   **Security:** Enforced via `requirePartnerSession` and `requireAdminSession`. Partner endpoints strictly validate `partnerId` matching the authenticated session. Change Request attachments validate `ChangeRequest -> Project -> Partner -> User` ownership.
 
-### Next Steps (Phase 11: Production Deployment Readiness)
-1.  Read `docs/ROADMAP.md` to see Phase 11 goals.
-2.  Review `docs/PHASES/PHASE-10-CHANGE-REQUESTS.md` for context on the recently completed phase.
+### Next Steps (Phase 12: Support)
+1.  Read `docs/ROADMAP.md` to see Phase 12 goals.
+2.  Review `docs/PHASES/PHASE_11.md` for context on the recently completed phase.
 3.  Do not attempt to rewrite or refactor completed phases unless specifically requested by the user.

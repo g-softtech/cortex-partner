@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { adminChangeRequestSchema } from "@/lib/validations/changes";
+import { NotificationType } from "@prisma/client";
+import { notifyUser } from "@/lib/notifications";
 
 /**
  * PATCH /api/admin/projects/[id]/changes/[changeId]
@@ -39,7 +41,22 @@ export async function PATCH(
   // Verify the change request exists and belongs to the project
   const changeRequest = await db.changeRequest.findUnique({
     where: { id: params.changeId },
-    select: { id: true, projectId: true, status: true },
+    select: { 
+      id: true, 
+      projectId: true, 
+      status: true,
+      project: {
+        select: {
+          projectNumber: true,
+          partner: {
+            select: {
+              userId: true,
+              user: { select: { email: true, name: true } }
+            }
+          }
+        }
+      }
+    },
   });
 
   if (!changeRequest || changeRequest.projectId !== params.id) {
@@ -87,8 +104,30 @@ export async function PATCH(
       },
     });
 
-    return updatedCr;
+    return { updatedCr, dispatchEmail: undefined };
   });
 
-  return NextResponse.json({ success: true, changeRequest: updated });
+  let finalDispatch = () => {};
+  if (status !== changeRequest.status) {
+    const statusFormatted = status.replace(/_/g, " ");
+    const dispatchEmail = await notifyUser({
+      tx: db, // Out of transaction here, but it's safe since the db transaction is committed
+      userId: changeRequest.project.partner.userId,
+      type: NotificationType.CHANGE_REQUEST_UPDATE,
+      title: "Change Request Updated",
+      message: `Your change request for project ${changeRequest.project.projectNumber} is now ${statusFormatted}`,
+      email: {
+        to: changeRequest.project.partner.user.email,
+        subject: `Change Request Updated: Project ${changeRequest.project.projectNumber}`,
+        html: `<p>Hi ${changeRequest.project.partner.user.name},</p>
+        <p>Your change request for project <strong>${changeRequest.project.projectNumber}</strong> has been updated to <strong>${statusFormatted}</strong>.</p>
+        <p>Please log in to your dashboard to review the details.</p>`,
+      }
+    });
+    finalDispatch = dispatchEmail;
+  }
+
+  finalDispatch();
+
+  return NextResponse.json({ success: true, changeRequest: updated.updatedCr });
 }

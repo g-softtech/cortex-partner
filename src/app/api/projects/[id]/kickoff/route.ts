@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requirePartnerSession, isAuthError } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { kickoffSaveSchema, kickoffSubmitSchema, fileRegistrationSchema } from "@/lib/validations/kickoff";
-import { KickoffStatus } from "@prisma/client";
+import { KickoffStatus, NotificationType } from "@prisma/client";
+import { notifyAdmins } from "@/lib/notifications";
 
 /**
  * PATCH /api/projects/[id]/kickoff
@@ -116,7 +117,7 @@ export async function PATCH(
   // Load kickoff + project for ownership and status validation
   const kickoff = await db.projectKickoff.findFirst({
     where: { project: { id: params.id, partnerId: partner.id } },
-    select: { id: true, status: true, project: { select: { id: true, projectStatus: true } } },
+    select: { id: true, status: true, project: { select: { id: true, projectStatus: true, projectNumber: true } } },
   });
 
   if (!kickoff) {
@@ -173,8 +174,23 @@ export async function PATCH(
         },
       });
 
-      return { kickoffId: kickoff.id };
+      // Notify Admins
+      const dispatchEmails = await notifyAdmins({
+        tx,
+        type: NotificationType.KICKOFF_UPDATE,
+        title: "Kickoff Submitted",
+        message: `Partner has submitted the kickoff for project ${kickoff.project.projectNumber}`,
+        email: {
+          subject: `Kickoff Submitted: ${kickoff.project.projectNumber}`,
+          html: `<p>A partner has submitted the kickoff for project <strong>${kickoff.project.projectNumber}</strong>.</p>
+          <p>Please log in to the admin dashboard to review.</p>`,
+        }
+      });
+
+      return { kickoffId: kickoff.id, dispatchEmails };
     });
+
+    result.dispatchEmails();
 
     return NextResponse.json({
       success: true,

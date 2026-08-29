@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { checkRateLimit } from "@/lib/services/rate-limit";
 import { projectSubmissionSchema } from "@/lib/validations/project";
 import { requirePartnerSession } from "@/lib/auth/session";
+import { notifyAdmins } from "@/lib/notifications";
+import { NotificationType } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -37,7 +39,7 @@ export async function POST(req: Request) {
     const validData = result.data;
 
     // 4. Atomic Sequence Increment & Project Creation
-    const project = await db.$transaction(async (tx) => {
+    const txResult = await db.$transaction(async (tx) => {
       const sequence = await tx.sequence.upsert({
         where: { id: "PROJECT" },
         update: { value: { increment: 1 } },
@@ -48,7 +50,7 @@ export async function POST(req: Request) {
 
       // CRITICAL: We enforce the partnerId exclusively from the server-side session.
       // We NEVER spread the request body. We explicitly assign approved fields.
-      return await tx.project.create({
+      const projectCreated = await tx.project.create({
         data: {
           projectNumber,
           partnerId: partner.id, // Sourced from requirePartnerSession
@@ -66,7 +68,24 @@ export async function POST(req: Request) {
           projectNumber: true,
         },
       });
+
+      const dispatchEmails = await notifyAdmins({
+        tx,
+        type: NotificationType.PROJECT_UPDATE,
+        title: "New Project Submitted",
+        message: `Partner has submitted a new project: ${projectNumber}`,
+        email: {
+          subject: `New Project Submitted: ${projectNumber}`,
+          html: `<p>A new project <strong>${projectNumber}</strong> has been submitted by a partner.</p>
+          <p>Please log in to the admin dashboard to review.</p>`,
+        }
+      });
+
+      return { projectCreated, dispatchEmails };
     });
+
+    txResult.dispatchEmails();
+    const project = txResult.projectCreated;
 
     return NextResponse.json(
       {

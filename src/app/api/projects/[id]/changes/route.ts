@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { requirePartnerSession, isAuthError } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { changeRequestSchema } from "@/lib/validations/changes";
-import { ProjectStatus, RequestStatus } from "@prisma/client";
+import { ProjectStatus, RequestStatus, NotificationType } from "@prisma/client";
+import { notifyAdmins } from "@/lib/notifications";
 
 /**
  * POST /api/projects/[id]/changes
@@ -46,7 +47,7 @@ export async function POST(
   // Verify ownership and project status
   const project = await db.project.findUnique({
     where: { id: params.id },
-    select: { id: true, partnerId: true, projectStatus: true },
+    select: { id: true, partnerId: true, projectStatus: true, projectNumber: true },
   });
 
   if (!project || project.partnerId !== partner.id) {
@@ -64,7 +65,7 @@ export async function POST(
   }
 
   // Create ChangeRequest and any associated files atomically
-  const changeRequest = await db.$transaction(async (tx) => {
+  const changeRequestResult = await db.$transaction(async (tx) => {
     const cr = await tx.changeRequest.create({
       data: {
         description,
@@ -102,8 +103,23 @@ export async function POST(
       },
     });
 
-    return cr;
+    const dispatchEmails = await notifyAdmins({
+      tx,
+      type: NotificationType.CHANGE_REQUEST_UPDATE,
+      title: "New Change Request",
+      message: `Partner has submitted a new change request for project ${project.projectNumber}`,
+      email: {
+        subject: `New Change Request: Project ${project.projectNumber}`,
+        html: `<p>A new change request has been submitted by a partner for project <strong>${project.projectNumber}</strong>.</p>
+        <p>Please log in to the admin dashboard to review.</p>`,
+      }
+    });
+
+    return { cr, dispatchEmails };
   });
+
+  changeRequestResult.dispatchEmails();
+  const changeRequest = changeRequestResult.cr;
 
   return NextResponse.json({ success: true, changeRequest }, { status: 201 });
 }

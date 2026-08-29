@@ -130,9 +130,7 @@ export default function ApplyPage() {
                     type="radio"
                     value="true"
                     className="mr-2"
-                    {...register("hasPotentialClients", {
-                      setValueAs: (v) => v === "true"
-                    })}
+                    {...register("hasPotentialClients")}
                     disabled={isSubmitting}
                   />
                   <span className="text-sm">Yes</span>
@@ -143,9 +141,7 @@ export default function ApplyPage() {
                     value="false"
                     defaultChecked
                     className="mr-2"
-                    {...register("hasPotentialClients", {
-                      setValueAs: (v) => v === "true"
-                    })}
+                    {...register("hasPotentialClients")}
                     disabled={isSubmitting}
                   />
                   <span className="text-sm">No</span>
