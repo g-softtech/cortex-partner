@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requirePartnerSession, isAuthError } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { NotificationType } from "@prisma/client";
+import { notifyAdmins } from "@/lib/notifications";
 
 /**
  * PATCH /api/projects/[id]/accept
@@ -96,8 +98,22 @@ export async function PATCH(
         },
       });
 
-      return { projectNumber: project.projectNumber, kickoffId: kickoff.id };
+      const dispatchEmail = await notifyAdmins({
+        tx,
+        type: NotificationType.PROJECT_UPDATE,
+        title: "Proposal Accepted",
+        message: `Partner has accepted the proposal for project ${project.projectNumber}`,
+        email: {
+          subject: `Proposal Accepted: Project ${project.projectNumber}`,
+          html: `<p>A partner has accepted the proposal for project <strong>${project.projectNumber}</strong>.</p>
+          <p>Please log in to the admin dashboard for details.</p>`,
+        }
+      });
+
+      return { projectNumber: project.projectNumber, kickoffId: kickoff.id, dispatchEmail };
     });
+
+    result.dispatchEmail();
 
     return NextResponse.json({
       success: true,

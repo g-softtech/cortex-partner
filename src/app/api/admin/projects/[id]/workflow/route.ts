@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdminSession, isAuthError } from "@/lib/auth/session";
 import { adminWorkflowSchema } from "@/lib/validations/workflow";
-import { ProjectStatus } from "@prisma/client";
+import { ProjectStatus, NotificationType } from "@prisma/client";
+import { notifyUser } from "@/lib/notifications";
 
 /**
  * PATCH /api/admin/projects/[id]/workflow
@@ -71,7 +72,17 @@ export async function PATCH(
 
   const currentProject = await db.project.findUnique({
     where: { id: projectId },
-    select: { id: true, projectStatus: true, projectNumber: true },
+    select: { 
+      id: true, 
+      projectStatus: true, 
+      projectNumber: true,
+      partner: {
+        select: {
+          userId: true,
+          user: { select: { email: true, name: true } }
+        }
+      }
+    },
   });
 
   if (!currentProject) {
@@ -124,14 +135,32 @@ export async function PATCH(
         },
       });
 
-      return updated;
+      const statusFormatted = newStatus.replace(/_/g, " ");
+      const dispatchEmail = await notifyUser({
+        tx,
+        userId: currentProject.partner.userId,
+        type: NotificationType.PROJECT_UPDATE,
+        title: "Project Status Updated",
+        message: `Your project ${currentProject.projectNumber} is now ${statusFormatted}`,
+        email: {
+          to: currentProject.partner.user.email,
+          subject: `Project Updated: ${currentProject.projectNumber}`,
+          html: `<p>Hi ${currentProject.partner.user.name},</p>
+          <p>Your project <strong>${currentProject.projectNumber}</strong> has advanced to <strong>${statusFormatted}</strong>.</p>
+          <p>Please log in to your dashboard to view the latest status.</p>`,
+        }
+      });
+
+      return { updated, dispatchEmail };
     });
+
+    result.dispatchEmail();
 
     return NextResponse.json({
       success: true,
-      projectNumber: result?.projectNumber,
-      projectStatus: result?.projectStatus,
-      updatedAt: result?.updatedAt,
+      projectNumber: result.updated?.projectNumber,
+      projectStatus: result.updated?.projectStatus,
+      updatedAt: result.updated?.updatedAt,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "CONCURRENT_MODIFICATION") {

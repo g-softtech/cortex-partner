@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requirePartnerSession, isAuthError } from "@/lib/auth/session";
 import { partnerReviewSchema } from "@/lib/validations/workflow";
-import { ProjectStatus } from "@prisma/client";
+import { ProjectStatus, NotificationType } from "@prisma/client";
+import { notifyAdmins } from "@/lib/notifications";
 
 /**
  * PATCH /api/projects/[id]/review
@@ -125,14 +126,32 @@ export async function PATCH(
         },
       });
 
-      return updated;
+      const title = action === "APPROVE" ? "Project Approved by Partner" : "Project Issue Reported";
+      const message = action === "APPROVE" 
+        ? `Partner has approved project ${currentProject.projectNumber} (moved to ${newStatus})` 
+        : `Partner has reported an issue for project ${currentProject.projectNumber}`;
+
+      const dispatchEmail = await notifyAdmins({
+        tx,
+        type: NotificationType.PROJECT_UPDATE,
+        title,
+        message,
+        email: {
+          subject: `Partner Review: Project ${currentProject.projectNumber}`,
+          html: `<p>${message}.</p><p>Please log in to the admin dashboard for details.</p>`,
+        }
+      });
+
+      return { updated, dispatchEmail };
     });
+
+    result.dispatchEmail();
 
     return NextResponse.json({
       success: true,
-      projectNumber: result?.projectNumber,
-      projectStatus: result?.projectStatus,
-      updatedAt: result?.updatedAt,
+      projectNumber: result.updated?.projectNumber,
+      projectStatus: result.updated?.projectStatus,
+      updatedAt: result.updated?.updatedAt,
     });
   } catch (err) {
     if (err instanceof Error && err.message === "CONCURRENT_MODIFICATION") {
