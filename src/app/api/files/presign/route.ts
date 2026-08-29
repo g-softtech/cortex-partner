@@ -2,24 +2,25 @@ import { NextResponse } from "next/server";
 import { requirePartnerSession, requireAdminSession, isAuthError } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { generatePresignedUploadUrl } from "@/lib/storage/s3";
+import { checkRateLimit } from "@/lib/services/rate-limit";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 
-// Allowed MIME types and max file size (10 MB)
-const ALLOWED_MIME_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "image/svg+xml",
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/vnd.ms-excel",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "text/plain",
-  "application/zip",
-];
+// Allowed MIME types and mapping to explicit safe extensions
+const ALLOWED_MIME_TYPES: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/gif": "gif",
+  "image/webp": "webp",
+  "image/svg+xml": "svg",
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "text/plain": "txt",
+  "application/zip": "zip",
+};
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
 
@@ -27,7 +28,7 @@ const presignSchema = z.object({
   projectId: z.string().min(1),
   changeRequestId: z.string().optional(),
   fileName: z.string().min(1).max(255),
-  contentType: z.string().refine((val) => ALLOWED_MIME_TYPES.includes(val), {
+  contentType: z.string().refine((val) => Object.keys(ALLOWED_MIME_TYPES).includes(val), {
     message: "File type not allowed.",
   }),
   fileSize: z.number().int().positive().max(MAX_FILE_SIZE, {
@@ -49,6 +50,13 @@ export async function POST(req: Request) {
   let isAdmin = false;
   let ownerId: string | null = null; // partnerId for partner auth
 
+  // Rate limit: 20 uploads per minute per IP
+  const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+  const rateLimit = await checkRateLimit(`presign_${ip}`, 20, 60 * 1000);
+  if (!rateLimit.success) {
+    return NextResponse.json({ error: "Too many upload requests" }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -64,7 +72,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { projectId, changeRequestId, fileName, contentType } = parsed.data;
+  const { projectId, changeRequestId, contentType } = parsed.data;
 
   // Try partner auth first
   try {
@@ -111,9 +119,12 @@ export async function POST(req: Request) {
   }
 
   // 3. Generate a unique storage key (never expose structure that leaks data)
-  const ext = fileName.split(".").pop() ?? "bin";
+  // SECURITY: Ignore the client-provided extension. 
+  // Force the extension to match the validated contentType's known safe extension.
+  // This prevents an attacker from sending contentType="image/jpeg" but fileName="virus.exe"
+  const safeExt = ALLOWED_MIME_TYPES[contentType] ?? "bin";
   const prefix = changeRequestId ? `changes/${changeRequestId}` : `projects/${project.id}`;
-  const storageKey = `${prefix}/${uuidv4()}.${ext}`;
+  const storageKey = `${prefix}/${uuidv4()}.${safeExt}`;
 
   // 4. Generate the presigned URL
   try {

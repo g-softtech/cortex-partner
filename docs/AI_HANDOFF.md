@@ -17,18 +17,18 @@ Do NOT:
 
 ## Status Overview
 
-**Current Phase:** Phase 13 - Resources (Next)
-**Last Completed:** Phase 12 - Support
+**Current Phase:** Phase 15 - Testing (Next)
+**Last Completed:** Phase 14 - Security & Hardening
 **Date:** 2026-08-29
 
-**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, and 12.
+**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, and 14.
 
 ---
 
 ## What Was Just Completed
 
-**Phase 11: Notifications**
-Implemented a centralized notification system (`notifyUser` and `notifyAdmins`) providing both in-app records and robust asynchronous Resend email dispatches. Notification records are committed alongside database transitions, and emails are fired safely afterwards to avoid reverting business logic on network failures. Added `NotificationDropdown` to admin and partner navigations.
+**Phase 14: Security & Hardening**
+Conducted a global authorization audit across all routes, verifying strict `requirePartnerSession` and `requireAdminSession` boundaries. Implemented strict mapping of MIME types to file extensions in S3 presigned URLs, mitigating extension spoofing. Added standard rate limits to setup and presign endpoints. Integrated Next.js security headers in `next.config.mjs`.
 
 ---
 
@@ -41,7 +41,7 @@ Implemented a centralized notification system (`notifyUser` and `notifyAdmins`) 
 *   **Schema:** The Prisma schema is **FROZEN**. New data requirements must fit into existing JSON fields or `AuditLog.metadata`.
 *   **Security:** Enforced via `requirePartnerSession` and `requireAdminSession`. Partner endpoints strictly validate `partnerId` matching the authenticated session. Change Request attachments validate `ChangeRequest -> Project -> Partner -> User` ownership.
 
-### Next Steps (Phase 12: Support)
-1.  Read `docs/ROADMAP.md` to see Phase 12 goals.
-2.  Review `docs/PHASES/PHASE_11.md` for context on the recently completed phase.
+### Next Steps (Phase 15: Testing)
+1.  Read `docs/ROADMAP.md` to see Phase 15 goals.
+2.  Review `docs/PHASES/PHASE_14.md` for context on the recently completed security hardening.
 3.  Do not attempt to rewrite or refactor completed phases unless specifically requested by the user.

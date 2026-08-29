@@ -2,9 +2,9 @@
 
 ## Overall Status
 
-Phase: 13 of 16
-Status: COMPLETE (Phase 13)
-Overall Completion: 81%
+Phase: 14 of 16
+Status: COMPLETE (Phase 14)
+Overall Completion: 87%
 
 Last Updated: 2026-08-29
 Last Updated By: AI (Antigravity / Gemini 3.1 Pro)
@@ -55,17 +55,18 @@ Last Updated By: AI (Antigravity / Gemini 3.1 Pro)
 
 - [x] Phase 13: Resources
 
+- [x] Phase 14: Security & Hardening
+
 ## Currently Working On
 
-- [ ] Phase 14: Security & Hardening
+- [ ] Phase 15: Testing
 
 ## Next
 
-- [ ] Authorization audit — all routes
-- [ ] Rate limiting on public routes
-- [ ] File type/MIME validation on uploads
-- [ ] Audit log review
-- [ ] No secrets in Git
+- [ ] Unit tests for services/authorization
+- [ ] Integration tests for API routes
+- [ ] E2E tests for Partner and Admin flows
+- [ ] Permission boundary tests
 
 ## Blocked
 

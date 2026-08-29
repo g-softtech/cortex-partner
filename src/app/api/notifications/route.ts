@@ -3,11 +3,18 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/options";
 import { db } from "@/lib/db";
 import { z } from "zod";
+import { checkRateLimit } from "@/lib/services/rate-limit";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Rate limit: 60 requests per minute per user
+  const rateLimit = await checkRateLimit(`notif_${session.user.id}`, 60, 60 * 1000);
+  if (!rateLimit.success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   const { searchParams } = new URL(req.url);
@@ -34,6 +41,12 @@ export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Rate limit for PATCH: 30 requests per minute per user
+  const rateLimit = await checkRateLimit(`notif_patch_${session.user.id}`, 30, 60 * 1000);
+  if (!rateLimit.success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   let body: unknown;

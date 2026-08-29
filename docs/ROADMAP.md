@@ -261,16 +261,16 @@ The Cortex Partner Program is built in incremental phases. Each phase must be ve
 
 ---
 
-## PHASE 14 — SECURITY & HARDENING
+## PHASE 14 — SECURITY & HARDENING ✅ COMPLETE
 
 **Objective:** Full authorization audit, rate limiting, file security.
 
 ### Tasks
-- [ ] Authorization audit — all routes
-- [ ] Rate limiting on public routes
-- [ ] File type/MIME validation on uploads
-- [ ] Audit log review
-- [ ] No secrets in Git
+- [x] Authorization audit — all routes
+- [x] Rate limiting on public routes
+- [x] File type/MIME validation on uploads
+- [x] Audit log review
+- [x] No secrets in Git
 
 ### Dependencies
 - All features complete

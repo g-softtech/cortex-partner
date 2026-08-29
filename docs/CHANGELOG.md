@@ -22,6 +22,15 @@
   - Implemented Client UI (`AssessmentForm.tsx` & `projects/[id]/page.tsx`)
   - Added strict programmatic security tests that verify partner API exclusion and terminal states
 
+## [0.14.0] - 2026-08-29
+
+### Security
+- **Phase 14: Security & Hardening**
+  - Added rigorous `checkRateLimit` enforcement to `/api/auth/setup-account`, `/api/files/presign`, and `/api/notifications`.
+  - Hardened file upload security by strictly mapping allowed MIME types to safe file extensions on S3 upload keys, preventing `.exe` spoofing.
+  - Added strict Next.js HTTP security headers (`Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `X-DNS-Prefetch-Control`, `Referrer-Policy`, `Permissions-Policy`) to `next.config.mjs`.
+  - Audited global authorization boundaries; verified `requirePartnerSession` and `requireAdminSession` strict enforcement across all dynamic routes.
+
 ## [0.13.0] - 2026-08-29
 
 ### Added

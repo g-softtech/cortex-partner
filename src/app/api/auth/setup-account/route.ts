@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { checkRateLimit } from "@/lib/services/rate-limit";
 
 const setupSchema = z.object({
   token: z.string().min(1),
@@ -20,6 +21,14 @@ const setupSchema = z.object({
  */
 export async function POST(req: Request) {
   try {
+    // Basic rate limit: 10 attempts per 15 minutes per IP
+    const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
+    const rateLimit = await checkRateLimit(`setup_${ip}`, 10, 15 * 60 * 1000);
+    
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: "Too many attempts, please try again later." }, { status: 429 });
+    }
+
     const body = await req.json();
     const parsed = setupSchema.safeParse(body);
 
