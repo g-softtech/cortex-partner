@@ -4,18 +4,16 @@
 
 This project is **already under development**. Do NOT restart it.
 
+**FIRST read and understand `docs/ROADMAP.md` as the master project plan.** Then read `docs/ARCHITECTURE.md`, `docs/AI_HANDOFF.md`, `docs/PROJECT_STATUS.md`, `docs/DECISIONS.md`, and `docs/KNOWN_ISSUES.md`. These documents together define the project context. Do not begin implementation until you have inspected them and verified the actual repository state. Phases 0–8 are already complete; continue from the next phase documented in the master roadmap.
+
 Do NOT:
-- Redo Phase 0 or Phase 1.
+- Redo Phase 0 to Phase 8.
 - Reinitialize the repository
 - Recreate `package.json`
 - Reset the database
 - Delete migrations
 - Replace working architecture
-- Start from Phase 1
 - Install a new dependency simply because it is the latest version. Any new dependency must go through the existing stability/compatibility check.
-
-Instead: **READ → VERIFY → CONTINUE**
-Read the continuity documentation and verify the actual repository state before making changes.
 
 ---
 
@@ -25,137 +23,27 @@ Read the continuity documentation and verify the actual repository state before 
 
 ---
 
-## Current Status
-
-Phase 8 is complete. Partners can now accept project proposals, which atomically updates the project state and creates a kickoff draft. Partners can fill out the kickoff form and upload files securely to Cloudflare R2 via presigned URLs. Admins can review and approve kickoffs.
-
-Ready to build Phase 9 — Development Workflow.
-
----
-
-## What Has Been Completed
-
-### Phase 0 — COMPLETE
-
-- Repository initialized with `create-next-app@14.2.15`
-- Stable dependency stack frozen and pinned (see ARCHITECTURE.md)
-- `package-lock.json` generated and committed
-- `.nvmrc` → Node `22.16.0`
-- `package.json` engines → Node `22.16.0`
-- `.env.example` → placeholders only
-- `.gitignore` → `.env` excluded from Git
-- `prisma/schema.prisma` → full approved schema with all models, enums, FK constraints
-- Schema validated (`npx prisma validate` ✅)
-- Migration `20260826220002_init` applied to Neon dev database (`cortex_partner_dev`)
-- Prisma Client v5.21.0 generated
-- All docs/ continuity files created and populated
-
-### Phase 1 — COMPLETE
-
-- `src/lib/db/index.ts` (Prisma Client singleton)
-- `src/lib/validations/partner.ts` (Zod schema for applications)
-- `src/lib/services/rate-limit.ts` (In-memory abuse protection)
-- `src/app/api/partners/apply/route.ts` (Application creation with atomic Sequence increment)
-- `/` (Landing page)
-- `/apply` (Application form)
-- `/application-success` (Success page)
-
-### Phase 4 — COMPLETE
-
-- `src/lib/auth/options.ts` — real bcrypt password verification via DB lookup
-- `src/app/api/auth/setup-account/route.ts` — token validation + atomic password-set endpoint
-- `src/app/(public)/login/page.tsx` + `LoginForm.tsx` — real credentials login form with role-aware redirect
-- `src/app/(public)/setup-account/page.tsx` + `SetupForm.tsx` — account setup UI consuming the setup token
-- `scripts/bootstrap-admin.ts` — interactive admin bootstrap script (hidden password prompt, no shell history exposure)
-- Installed `bcryptjs@2.4.3` + `@types/bcryptjs@2.4.6`
-- Middleware (`src/middleware.ts`) already in place protecting `/admin` (ADMIN only) and `/dashboard`
-
-### Phase 5 — COMPLETE
-
-- `src/lib/auth/session.ts` — added `requirePartnerSession()` to verify Partner existence and role
-- `src/middleware.ts` — explicitly enforced `UserRole.PARTNER` on `/dashboard`, `/projects`, `/profile`
-- `src/app/(dashboard)/layout.tsx` — responsive sidebar layout for Partners
-- `/dashboard` — welcome, key statistics, recent projects
-- `/projects` — partner project listing
-- `/projects/[id]` — project detail with strict IDOR checking and Prisma `select` restrictions (no `adminNotes` or `opportunityStatus`)
-- `/profile` — read-only partner information display
-
-### Phase 6 — COMPLETE
-
-- `src/lib/validations/project.ts` — `projectSubmissionSchema` implemented.
-- `src/app/api/projects/route.ts` — strict project submission API. Uses atomic sequence incrementing for `CPJ-XXXXX`, enforces partner ID from session, uses `checkRateLimit`, and filters returned fields.
-- `src/app/(dashboard)/projects/new/page.tsx` — integrated form using `react-hook-form` and custom `zodResolver`.
-- Added "Submit New Project" CTAs to `/dashboard` and `/projects`.
-
----
-
 ## What Was Just Completed
 
-Phase 6 Project Submission — partners can successfully and securely submit new projects. API securely derives identity from the session and rejects mass assignments.
+**Phase 8: Project Kickoff**
+Partners can now accept project proposals, which atomically updates the project state to `WON` and creates a kickoff draft. Partners can fill out the interactive kickoff form and upload files securely to Cloudflare R2 via presigned URLs. Admins can review and approve kickoffs, transitioning the project to `READY_FOR_DEVELOPMENT`.
 
 ---
 
 ## Exact Next Task
 
-**Build Phase 7 — Admin Dashboard & Architecture:**
-
-1. Create `(admin)` route group with an admin-specific layout.
-2. Build `/admin` dashboard overview (stats for total projects, total partners).
-3. Build `/admin/projects` to list all submitted projects.
-
----
-
-## Files Recently Modified
-
-- `src/lib/auth/options.ts`
-- `src/app/api/auth/setup-account/route.ts`
-- `src/app/(public)/login/page.tsx`
-- `src/app/(public)/login/LoginForm.tsx`
-- `src/app/(public)/setup-account/page.tsx`
-- `src/app/(public)/setup-account/SetupForm.tsx`
-- `scripts/bootstrap-admin.ts`
-- `scripts/test-token-flow.ts`
-- `scripts/verify-db.ts`
-- `docs/PROJECT_STATUS.md`
-- `docs/CHANGELOG.md`
-- `docs/AI_HANDOFF.md`
-- `docs/ROADMAP.md`
-
----
-
-## Database Changes
-
-- (No schema changes. Migrations up-to-date)
-
----
-
-## Known Issues
-
-*(None currently open)*
-
-### KI-002 — Next.js SWC binary (resolved)
-- The SWC native binary for win32/x64 failed to load initially.
-- Resolved by reinstalling `@next/swc-win32-x64-msvc` with `--force`.
-
----
-
-## Tests Passed
-
-- `npx prisma validate` ✅
-- `npx tsc --noEmit` ✅
-- `npm run lint` ✅
-- `npm run build` ✅
-
-## Tests Not Yet Run
-
-- (All foundation tests have been successfully run)
+**Build Phase 9 — Development Workflow:**
+1. Track project through the development lifecycle.
+2. Implement status transitions: `READY_FOR_DEVELOPMENT → DEVELOPMENT → INTERNAL_QA → PARTNER_REVIEW`.
+3. Implement partner review flow (approve or report issue).
+4. Implement final transitions: `CUSTOMER_REVIEW → FINAL_APPROVAL → DELIVERED`.
 
 ---
 
 ## Things NOT To Change
 
 - The frozen dependency versions in `package.json`
-- The Prisma schema (unless a new migration is needed)
+- The Prisma schema (unless a new migration is needed for Phase 9)
 - The migration `20260826220002_init` (already applied to live database)
 - The database connection strategy (standard Prisma TCP, no adapters)
 - The docs/ continuity system structure
@@ -172,18 +60,20 @@ Phase 6 Project Submission — partners can successfully and securely submit new
 
 ---
 
-## Recommended Next Action
-
-Begin Phase 4: Authentication. 
+## Tests Passed
+- `npx prisma validate` ✅
+- `npx tsc --noEmit` ✅
+- `npm run lint` ✅
+- `npm run build` ✅
+- `npx tsx scripts/test-phase8-security.ts` ✅
 
 ---
 
 ## SESSION END SUMMARY
 
-**Session:** Phase 6 Project Submission — Complete
-**Completed:** `projectSubmissionSchema`, UI form with RHF, strict `POST /api/projects` route enforcing session partner mapping, atomic CPJ ID generation.
-**Current state:** Phase 6 complete. Ready for Phase 7.
-**Next exact action:** Build Phase 7: Admin layout and basic admin projects overview.
-**Files changed:** `route.ts`, `page.tsx`, `project.ts`, `docs/`.
-**Tests passed:** `prisma validate`, `tsc --noEmit`, `lint`, `build`, programmatic security test preventing mass assignment and IDOR on POST.
+**Session:** Phase 8 Project Kickoff — Complete
+**Completed:** S3 client config, Presigned Upload/Download routes, Atomic Proposal Acceptance, Partner Kickoff Form with file uploads, Admin Kickoff Review.
+**Current state:** Phase 8 complete. Ready for Phase 9.
+**Next exact action:** Begin Phase 9: Development Workflow.
+**Tests passed:** All verification and security tests passed.
 **Known issues:** None open.
