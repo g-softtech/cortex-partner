@@ -1,4 +1,11 @@
 ## [Unreleased]
+- **Phase 9: Development Workflow**
+  - Implemented Admin API & UI for progressing projects through development states.
+  - Implemented Partner API & UI for approving development stages and reporting issues.
+  - Created server-side strict state transition machine mapping valid transitions.
+  - Issue descriptions from Partners are securely embedded inside AuditLog metadata to avoid schema mutations.
+  - Added strict programmatic security tests in `test-phase9-security.ts`.
+
 - **Phase 8: Project Kickoff**
   - Added AWS SDK S3 clients for Cloudflare R2 file uploads/downloads
   - Built direct-to-S3 presigned URL generation with IDOR ownership validation

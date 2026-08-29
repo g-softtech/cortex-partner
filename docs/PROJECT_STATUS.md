@@ -2,11 +2,11 @@
 
 ## Overall Status
 
-Phase: 7 of 16
-Status: COMPLETE (Phase 8)
-Overall Completion: 50%
+Phase: 9 of 16
+Status: COMPLETE (Phase 9)
+Overall Completion: 56%
 
-Last Updated: 2026-08-28
+Last Updated: 2026-08-29
 Last Updated By: AI (Antigravity / Gemini 3.1 Pro)
 
 ---
@@ -48,15 +48,17 @@ Last Updated By: AI (Antigravity / Gemini 3.1 Pro)
 - [x] Phase 6 — Project Submission (Form UI, atomic CPJ-XXXXX sequence generation, secure API route)
 - [x] Phase 7 — Admin Dashboard & Architecture
 - [x] Phase 8 — Project Kickoff (Accept proposal, form, S3 integration, admin review)
+- [x] Phase 9 — Development Workflow (Admin & Partner transitions, atomic workflow routing)
 
 ## Currently Working On
 
-- [ ] Phase 9 — Development Workflow
+- [ ] Phase 10 — Change Requests
 
 ## Next
 
-- [ ] Partner review — approve or report issue
-- [ ] `CUSTOMER_REVIEW → FINAL_APPROVAL → DELIVERED`
+- [ ] `/projects/[id]/changes` — submit change request
+- [ ] File attachments on change requests
+- [ ] Admin handles: IN_SCOPE, ADDITIONAL_WORK, etc.
 
 ## Blocked
 

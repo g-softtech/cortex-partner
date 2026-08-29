@@ -5,6 +5,7 @@ import { ProjectStatus, OpportunityStatus } from "@prisma/client";
 import Link from "next/link";
 import { AssessmentForm } from "./AssessmentForm";
 import { KickoffReviewPanel } from "./KickoffReviewPanel";
+import WorkflowPanel from "./WorkflowPanel";
 
 export const metadata = {
   title: "Project Detail | Cortex Admin",
@@ -279,6 +280,12 @@ export default async function AdminProjectDetailPage({
           files={project.files}
         />
       )}
+
+      {/* Development Workflow Panel */}
+      <WorkflowPanel 
+        projectId={project.id} 
+        currentStatus={project.projectStatus} 
+      />
     </div>
   );
 }

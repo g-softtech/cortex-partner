@@ -18,25 +18,25 @@ Do NOT:
 ---
 
 ## Current State
-**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, and 8.
-**NEXT TASK:** Phase 9 — Development Workflow (See `docs/ROADMAP.md`)
+**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9.
+**NEXT TASK:** Phase 10 — Change Requests (See `docs/ROADMAP.md`)
 
 ---
 
 ## What Was Just Completed
 
-**Phase 8: Project Kickoff**
-Partners can now accept project proposals, which atomically updates the project state to `WON` and creates a kickoff draft. Partners can fill out the interactive kickoff form and upload files securely to Cloudflare R2 via presigned URLs. Admins can review and approve kickoffs, transitioning the project to `READY_FOR_DEVELOPMENT`.
+**Phase 9: Development Workflow**
+Admins can now transition project states through the development lifecycle (`READY_FOR_DEVELOPMENT → DEVELOPMENT → INTERNAL_QA → PARTNER_REVIEW` and `FINAL_APPROVAL → DELIVERED`). Partners can review projects and either approve them (moving state forward) or report issues (moving state back to `CHANGES` and logging issue in AuditLog).
 
 ---
 
 ## Exact Next Task
 
-**Build Phase 9 — Development Workflow:**
-1. Track project through the development lifecycle.
-2. Implement status transitions: `READY_FOR_DEVELOPMENT → DEVELOPMENT → INTERNAL_QA → PARTNER_REVIEW`.
-3. Implement partner review flow (approve or report issue).
-4. Implement final transitions: `CUSTOMER_REVIEW → FINAL_APPROVAL → DELIVERED`.
+**Build Phase 10 — Change Requests:**
+1. Allow partners to submit change requests post-delivery.
+2. Build `/projects/[id]/changes` for submitting change requests.
+3. Allow file attachments on change requests.
+4. Admin handlers for scoping change requests (e.g. IN_SCOPE, ADDITIONAL_WORK).
 
 ---
 
@@ -65,15 +65,15 @@ Partners can now accept project proposals, which atomically updates the project 
 - `npx tsc --noEmit` ✅
 - `npm run lint` ✅
 - `npm run build` ✅
-- `npx tsx scripts/test-phase8-security.ts` ✅
+- `npx tsx scripts/test-phase9-security.ts` ✅
 
 ---
 
 ## SESSION END SUMMARY
 
-**Session:** Phase 8 Project Kickoff — Complete
-**Completed:** S3 client config, Presigned Upload/Download routes, Atomic Proposal Acceptance, Partner Kickoff Form with file uploads, Admin Kickoff Review.
-**Current state:** Phase 8 complete. Ready for Phase 9.
-**Next exact action:** Begin Phase 9: Development Workflow.
+**Session:** Phase 9 Development Workflow — Complete
+**Completed:** Admin workflow transitions, Partner review/approval transitions, robust server-side state machine enforcement, issue descriptions logged to Audit metadata.
+**Current state:** Phase 9 complete. Ready for Phase 10.
+**Next exact action:** Begin Phase 10: Change Requests.
 **Tests passed:** All verification and security tests passed.
 **Known issues:** None open.

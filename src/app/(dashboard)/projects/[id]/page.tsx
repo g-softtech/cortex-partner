@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { ProjectStatus, ProjectType } from "@prisma/client";
 import Link from "next/link";
 import { AcceptProposalButton } from "./AcceptProposalButton";
+import ReviewPanel from "./ReviewPanel";
 
 export const metadata = {
   title: "Project Details | Cortex Partner Program",
@@ -151,6 +152,12 @@ export default async function ProjectDetailPage({
           projectNumber={project.projectNumber}
         />
       )}
+
+      {/* Review Panel — only shown when in PARTNER_REVIEW or CUSTOMER_REVIEW */}
+      <ReviewPanel
+        projectId={project.id}
+        currentStatus={project.projectStatus}
+      />
 
       {/* Kickoff Actions — shown after acceptance */}
       {hasKickoff && (
