@@ -49,10 +49,11 @@ Last Updated By: AI (Antigravity / Gemini 3.1 Pro)
 - [x] Phase 7 — Admin Dashboard & Architecture
 - [x] Phase 8 — Project Kickoff (Accept proposal, form, S3 integration, admin review)
 - [x] Phase 9 — Development Workflow (Admin & Partner transitions, atomic workflow routing)
+- [x] Phase 10 — Change Requests
 
 ## Currently Working On
 
-- [ ] Phase 10 — Change Requests
+- [ ] Phase 11 — Deployment & Refinement
 
 ## Next
 

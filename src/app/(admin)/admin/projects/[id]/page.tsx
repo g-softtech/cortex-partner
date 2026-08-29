@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AssessmentForm } from "./AssessmentForm";
 import { KickoffReviewPanel } from "./KickoffReviewPanel";
 import WorkflowPanel from "./WorkflowPanel";
+import { AdminChangeRequestsPanel } from "./AdminChangeRequestsPanel";
 
 export const metadata = {
   title: "Project Detail | Cortex Admin",
@@ -126,6 +127,10 @@ export default async function AdminProjectDetailPage({
           createdAt: true,
         },
         orderBy: { createdAt: "desc" },
+      },
+      changeRequests: {
+        orderBy: { createdAt: "desc" },
+        include: { files: true },
       },
     },
   });
@@ -286,6 +291,14 @@ export default async function AdminProjectDetailPage({
         projectId={project.id} 
         currentStatus={project.projectStatus} 
       />
+
+      {/* Change Requests Panel */}
+      {project.changeRequests && project.changeRequests.length > 0 && (
+        <AdminChangeRequestsPanel
+          projectId={project.id}
+          changeRequests={project.changeRequests}
+        />
+      )}
     </div>
   );
 }

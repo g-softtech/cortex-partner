@@ -25,6 +25,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
 
 const presignSchema = z.object({
   projectId: z.string().min(1),
+  changeRequestId: z.string().optional(),
   fileName: z.string().min(1).max(255),
   contentType: z.string().refine((val) => ALLOWED_MIME_TYPES.includes(val), {
     message: "File type not allowed.",
@@ -32,7 +33,7 @@ const presignSchema = z.object({
   fileSize: z.number().int().positive().max(MAX_FILE_SIZE, {
     message: "File size must not exceed 10 MB.",
   }),
-  category: z.enum(["LOGO", "IMAGE", "DOCUMENT", "BRAND_GUIDELINES", "OTHER"]),
+  category: z.enum(["LOGO", "IMAGE", "DOCUMENT", "BRAND_GUIDELINES", "OTHER"]).optional(),
 });
 
 /**
@@ -63,7 +64,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const { projectId, fileName, contentType } = parsed.data;
+  const { projectId, changeRequestId, fileName, contentType } = parsed.data;
 
   // Try partner auth first
   try {
@@ -97,9 +98,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
+  if (changeRequestId) {
+    // 2.5 Verify ChangeRequest exists and belongs to this project
+    const changeRequest = await db.changeRequest.findUnique({
+      where: { id: changeRequestId },
+      select: { projectId: true }
+    });
+
+    if (!changeRequest || changeRequest.projectId !== projectId) {
+      return NextResponse.json({ error: "Invalid change request." }, { status: 404 });
+    }
+  }
+
   // 3. Generate a unique storage key (never expose structure that leaks data)
   const ext = fileName.split(".").pop() ?? "bin";
-  const storageKey = `projects/${project.id}/${uuidv4()}.${ext}`;
+  const prefix = changeRequestId ? `changes/${changeRequestId}` : `projects/${project.id}`;
+  const storageKey = `${prefix}/${uuidv4()}.${ext}`;
 
   // 4. Generate the presigned URL
   try {

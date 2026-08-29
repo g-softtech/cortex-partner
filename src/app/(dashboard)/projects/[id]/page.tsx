@@ -159,6 +159,26 @@ export default async function ProjectDetailPage({
         currentStatus={project.projectStatus}
       />
 
+      {/* Change Requests Link — only shown when DELIVERED or SUPPORT */}
+      {(project.projectStatus === ProjectStatus.DELIVERED || project.projectStatus === ProjectStatus.SUPPORT) && (
+        <div className="rounded-lg border bg-white p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-semibold text-slate-900">Change Requests</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Submit and manage post-delivery change requests for this project.
+              </p>
+            </div>
+            <Link
+              href={`/projects/${project.id}/changes`}
+              className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+            >
+              View Change Requests
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Kickoff Actions — shown after acceptance */}
       {hasKickoff && (
         <div className="rounded-lg border bg-white p-6">
