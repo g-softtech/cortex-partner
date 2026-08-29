@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { checkRateLimit } from "@/lib/services/rate-limit";
 import { partnerApplicationSchema } from "@/lib/validations/partner";
-import { ApplicationStatus } from "@prisma/client";
+import { ApplicationStatus, NotificationType } from "@prisma/client";
+import { notifyAdmins } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   try {
@@ -69,6 +70,37 @@ export async function POST(req: Request) {
         },
       });
     });
+
+    // 5. Notify admins (in-app + email) — outside the transaction so email failure
+    //    cannot roll back the successfully saved application.
+    const dispatchEmails = await db.$transaction(async (tx) => {
+      return await notifyAdmins({
+        tx,
+        type: NotificationType.APPLICATION_UPDATE,
+        title: "New Partner Application",
+        message: `A new partner application (${application.applicationNumber}) has been submitted by ${application.name} (${application.email}).`,
+        email: {
+          subject: `New Partner Application: ${application.applicationNumber}`,
+          html: `
+            <h2>New Partner Application Received</h2>
+            <p>A new partner application has been submitted. Here are the details:</p>
+            <table style="border-collapse: collapse; width: 100%;">
+              <tr><td style="padding: 8px; font-weight: bold;">Application Number</td><td style="padding: 8px;">${application.applicationNumber}</td></tr>
+              <tr><td style="padding: 8px; font-weight: bold;">Name</td><td style="padding: 8px;">${application.name}</td></tr>
+              <tr><td style="padding: 8px; font-weight: bold;">Email</td><td style="padding: 8px;">${application.email}</td></tr>
+              <tr><td style="padding: 8px; font-weight: bold;">Phone</td><td style="padding: 8px;">${application.phone}</td></tr>
+              <tr><td style="padding: 8px; font-weight: bold;">Occupation</td><td style="padding: 8px;">${application.occupation}</td></tr>
+              <tr><td style="padding: 8px; font-weight: bold;">Has Potential Clients</td><td style="padding: 8px;">${application.hasPotentialClients ? 'Yes' : 'No'}</td></tr>
+              ${application.potentialClientType ? `<tr><td style="padding: 8px; font-weight: bold;">Potential Client Type</td><td style="padding: 8px;">${application.potentialClientType}</td></tr>` : ''}
+              <tr><td style="padding: 8px; font-weight: bold;">Reason</td><td style="padding: 8px;">${application.reason}</td></tr>
+              ${application.source ? `<tr><td style="padding: 8px; font-weight: bold;">Source</td><td style="padding: 8px;">${application.source}</td></tr>` : ''}
+            </table>
+            <p><a href="${process.env.NEXTAUTH_URL}/admin/partner-applications">Review the application in the admin dashboard →</a></p>
+          `,
+        },
+      });
+    });
+    dispatchEmails();
 
     // We do NOT return the full database object to avoid leaking internal fields like IDs.
     return NextResponse.json(
