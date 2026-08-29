@@ -17,10 +17,15 @@ import { UserRole } from "@prisma/client";
  * Unauthenticated → redirects to /login
  * Authenticated but wrong role → 403 response
  */
+import { getToken } from "next-auth/jwt";
+
 export default withAuth(
-  function middleware(req) {
+  async function middleware(req) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
+    const decodedToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const allCookies = req.cookies.getAll().map(c => c.name);
+    console.log('MIDDLEWARE:', { pathname, hasToken: !!token, hasDecodedToken: !!decodedToken, allCookies });
 
     // Admin routes require ADMIN role
     if (pathname.startsWith("/admin")) {

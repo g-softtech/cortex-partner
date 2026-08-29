@@ -10,7 +10,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1120.0",
@@ -27,17 +30,20 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@prisma/client": "5.21.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/uuid": "^10.0.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.15",
     "postcss": "^8",
     "prisma": "5.21.0",
     "tailwindcss": "3.4.14",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "vitest": "^4.1.11"
   }
 }
