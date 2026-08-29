@@ -48,7 +48,7 @@ export async function notifyUser(params: NotifyUserParams, skipInApp: boolean = 
       (async () => {
         try {
           await resend.emails.send({
-            from: "Cortex Partner Program <noreply@partner.thecortexsystems.com>",
+            from: "Cortex Partner Program <build@thecortexsystems.com>",
             to: params.email!.to,
             subject: params.email!.subject,
             html: params.email!.html,

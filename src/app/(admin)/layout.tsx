@@ -38,6 +38,12 @@ export default async function AdminLayout({
             >
               Projects
             </Link>
+            <Link
+              href="/admin/support"
+              className="text-slate-300 hover:text-white transition-colors"
+            >
+              Support
+            </Link>
           </nav>
         </div>
         <div className="flex items-center gap-4">

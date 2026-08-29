@@ -22,6 +22,15 @@
   - Implemented Client UI (`AssessmentForm.tsx` & `projects/[id]/page.tsx`)
   - Added strict programmatic security tests that verify partner API exclusion and terminal states
 
+## [0.12.0] - 2026-08-29
+
+### Added
+- **Phase 12: Support**
+  - Implemented partner support request submission system (`/support`, `/support/new`).
+  - Implemented admin support management system (`/admin/support`, `/admin/support/[id]`).
+  - Centralized robust sequence ID generation for support tickets (`SUP-XXXXX`).
+  - Added email and in-app notifications for support ticket creation and status updates.
+
 ## [0.1.0] - 2026-08-27
 - **Phase 6: Project Submission**
   - Added `projectSubmissionSchema` validation
