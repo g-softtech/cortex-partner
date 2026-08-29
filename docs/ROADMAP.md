@@ -246,15 +246,15 @@ The Cortex Partner Program is built in incremental phases. Each phase must be ve
 
 ---
 
-## PHASE 13 — RESOURCES
+## PHASE 13 — RESOURCES ✅ COMPLETE
 
 **Objective:** Partner Guide, Sales Kit, and white-label resources.
 
 ### Tasks
-- [ ] `/resources` page
-- [ ] Partner Guide document
-- [ ] Sales Kit document
-- [ ] White-label guidelines
+- [x] `/resources` page
+- [x] Partner Guide document
+- [x] Sales Kit document
+- [x] White-label guidelines
 
 ### Dependencies
 - Phase 12 complete

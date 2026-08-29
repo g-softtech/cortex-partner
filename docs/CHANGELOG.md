@@ -22,6 +22,15 @@
   - Implemented Client UI (`AssessmentForm.tsx` & `projects/[id]/page.tsx`)
   - Added strict programmatic security tests that verify partner API exclusion and terminal states
 
+## [0.13.0] - 2026-08-29
+
+### Added
+- **Phase 13: Resources**
+  - Added Partner Resources hub (`/resources`).
+  - Added Partner Guide static page (`/resources/partner-guide`).
+  - Added Sales Kit static page (`/resources/sales-kit`).
+  - Added White-label Guidelines static page (`/resources/white-label`).
+
 ## [0.12.0] - 2026-08-29
 
 ### Added

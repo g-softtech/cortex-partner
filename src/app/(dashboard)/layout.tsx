@@ -46,6 +46,12 @@ export default async function DashboardLayout({
             Support
           </Link>
           <Link
+            href="/resources"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+          >
+            Resources
+          </Link>
+          <Link
             href="/profile"
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
           >
@@ -81,6 +87,9 @@ export default async function DashboardLayout({
             </Link>
             <Link href="/support" className="text-slate-600 hover:text-slate-900">
               Support
+            </Link>
+            <Link href="/resources" className="text-slate-600 hover:text-slate-900">
+              Resources
             </Link>
             <Link href="/profile" className="text-slate-600 hover:text-slate-900">
               Profile
