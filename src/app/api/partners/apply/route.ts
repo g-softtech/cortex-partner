@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { checkRateLimit } from "@/lib/services/rate-limit";
 import { partnerApplicationSchema } from "@/lib/validations/partner";
 import { ApplicationStatus, NotificationType } from "@prisma/client";
-import { notifyAdmins } from "@/lib/notifications";
+import { notifyAdmins, resend } from "@/lib/notifications";
 
 export async function POST(req: Request) {
   try {
@@ -101,6 +101,23 @@ export async function POST(req: Request) {
       });
     });
     await dispatchEmails();
+
+    // 6. Send applicant receipt email (fire and forget, though we await it to avoid Vercel killing it)
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: "Cortex Partner Program <build@thecortexsystems.com>",
+          to: application.email,
+          subject: "We received your Cortex Partner Application",
+          html: `<p>Hi ${application.name},</p>
+                 <p>Thank you for applying to the Cortex Partner Program.</p>
+                 <p>We have received your application (${application.applicationNumber}) and our team will review it shortly. We will notify you via email once a decision has been made.</p>
+                 <p>Best regards,<br>The Cortex Systems Team</p>`,
+        });
+      } catch (err) {
+        console.error("Failed to send applicant receipt email:", err);
+      }
+    }
 
     // We do NOT return the full database object to avoid leaking internal fields like IDs.
     return NextResponse.json(

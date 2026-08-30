@@ -143,7 +143,7 @@ export async function PATCH(
     }
   }, true); // skip in-app notification since they aren't a user
 
-  dispatchEmail();
+  await dispatchEmail();
 
   return NextResponse.json({
     success: true,
@@ -258,7 +258,7 @@ async function handleApproval(
     });
 
     // Execute the async email dispatch after transaction succeeds
-    result.dispatchEmail();
+    await result.dispatchEmail();
 
     // Return safe summary — plaintext token returned ONCE for Phase 4 email dispatch
     // It will never be stored or retrievable again after this response
