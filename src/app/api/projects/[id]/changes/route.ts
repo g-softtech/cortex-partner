@@ -118,7 +118,7 @@ export async function POST(
     return { cr, dispatchEmails };
   });
 
-  changeRequestResult.dispatchEmails();
+  await changeRequestResult.dispatchEmails();
   const changeRequest = changeRequestResult.cr;
 
   return NextResponse.json({ success: true, changeRequest }, { status: 201 });

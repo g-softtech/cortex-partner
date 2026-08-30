@@ -100,7 +100,7 @@ export async function POST(req: Request) {
         },
       });
     });
-    dispatchEmails();
+    await dispatchEmails();
 
     // We do NOT return the full database object to avoid leaking internal fields like IDs.
     return NextResponse.json(

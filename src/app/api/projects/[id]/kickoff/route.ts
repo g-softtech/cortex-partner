@@ -190,7 +190,7 @@ export async function PATCH(
       return { kickoffId: kickoff.id, dispatchEmails };
     });
 
-    result.dispatchEmails();
+    await result.dispatchEmails();
 
     return NextResponse.json({
       success: true,

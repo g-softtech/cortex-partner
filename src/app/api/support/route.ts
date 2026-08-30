@@ -92,7 +92,7 @@ export async function POST(req: Request) {
       return { supportRequest, dispatchEmails };
     });
 
-    txResult.dispatchEmails();
+    await txResult.dispatchEmails();
     const ticket = txResult.supportRequest;
 
     return NextResponse.json(

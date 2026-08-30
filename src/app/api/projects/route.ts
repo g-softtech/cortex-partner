@@ -84,7 +84,7 @@ export async function POST(req: Request) {
       return { projectCreated, dispatchEmails };
     });
 
-    txResult.dispatchEmails();
+    await txResult.dispatchEmails();
     const project = txResult.projectCreated;
 
     return NextResponse.json(
