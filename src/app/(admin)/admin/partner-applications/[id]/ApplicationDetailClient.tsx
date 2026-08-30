@@ -67,8 +67,7 @@ export default function ApplicationDetailClient({ application }: { application: 
       if (newStatus === ApplicationStatus.APPROVED) {
         setSuccess(
           `Application ${data.applicationNumber} approved. Partner ID: ${data.partnerId}. ` +
-            `Setup token generated (expires ${new Date(data.setupTokenExpiresAt).toLocaleString()}). ` +
-            `In Phase 4, this token will be sent via email.`
+            `Setup token generated (expires ${new Date(data.setupTokenExpiresAt).toLocaleString()}).`
         );
       } else {
         setSuccess(`Status updated to ${STATUS_LABELS[newStatus]}.`);

@@ -5,6 +5,7 @@ import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 type LoginValues = {
   email: string;
@@ -15,6 +16,7 @@ export default function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -79,13 +81,23 @@ export default function LoginForm() {
         <label className="block text-sm font-medium text-slate-700 text-left">
           Password
         </label>
-        <input
-          {...register("password", { required: "Password is required." })}
-          type="password"
-          autoComplete="current-password"
-          disabled={isLoading}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300"
-        />
+        <div className="relative">
+          <input
+            {...register("password", { required: "Password is required." })}
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            disabled={isLoading}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 pr-10"
+          />
+          <button
+            type="button"
+            tabIndex={-1}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        </div>
         {errors.password && (
           <p className="text-sm text-red-600 text-left">{errors.password.message}</p>
         )}

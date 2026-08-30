@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { Eye, EyeOff } from "lucide-react";
 
 type FormValues = {
   password: string;
@@ -16,9 +17,10 @@ interface ResetPasswordFormProps {
 
 export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -89,17 +91,27 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <label htmlFor="password" className="block text-sm font-medium text-slate-700">
           New Password
         </label>
-        <input
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          disabled={isLoading}
-          {...register("password", {
-            required: "Password is required.",
-            minLength: { value: 8, message: "Password must be at least 8 characters." },
-          })}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 disabled:opacity-50"
-        />
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register("password", {
+              required: "Password is required.",
+              minLength: { value: 8, message: "Password must be at least 8 characters." },
+            })}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 disabled:opacity-50 pr-10"
+          />
+          <button
+            type="button"
+            tabIndex={-1}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        </div>
         {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
       </div>
 
@@ -107,17 +119,27 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
           Confirm New Password
         </label>
-        <input
-          id="confirmPassword"
-          type="password"
-          autoComplete="new-password"
-          disabled={isLoading}
-          {...register("confirmPassword", {
-            required: "Please confirm your password.",
-            validate: (value) => value === watch("password") || "Passwords do not match.",
-          })}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 disabled:opacity-50"
-        />
+        <div className="relative">
+          <input
+            id="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register("confirmPassword", {
+              required: "Please confirm your password.",
+              validate: (value) => value === watch("password") || "Passwords do not match.",
+            })}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 disabled:opacity-50 pr-10"
+          />
+          <button
+            type="button"
+            tabIndex={-1}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        </div>
         {errors.confirmPassword && (
           <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
         )}
