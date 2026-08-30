@@ -46,18 +46,18 @@ export default function ApplyPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <header className="px-4 lg:px-6 h-14 flex items-center bg-white border-b">
+    <div className="flex flex-col min-h-screen bg-background">
+      <header className="px-4 lg:px-6 h-14 flex items-center bg-white dark:bg-slate-800 border-b dark:border-slate-700">
         <Link className="flex items-center justify-center" href="/">
           <span className="font-bold text-xl tracking-tighter">Cortex Partner</span>
         </Link>
       </header>
 
       <main className="flex-1 container px-4 md:px-6 max-w-2xl mx-auto py-12">
-        <div className="bg-white p-8 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold tracking-tight">Partner Application</h1>
-            <p className="text-gray-500 mt-2">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Partner Application</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">
               Apply to join the Cortex Partner Program. We review all applications within 48 hours.
             </p>
           </div>
@@ -71,11 +71,11 @@ export default function ApplyPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-700">Full Name *</label>
+              <label htmlFor="name" className="block text-sm font-medium text-foreground">Full Name *</label>
               <input
                 id="name"
                 type="text"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:opacity-50"
+                className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-background text-foreground px-3 py-2 text-sm focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50 transition-colors"
                 {...register("name")}
                 disabled={isSubmitting}
               />
@@ -84,11 +84,11 @@ export default function ApplyPage() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700">Email Address *</label>
+              <label htmlFor="email" className="block text-sm font-medium text-foreground">Email Address *</label>
               <input
                 id="email"
                 type="email"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:opacity-50"
+                className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-background text-foreground px-3 py-2 text-sm focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50 transition-colors"
                 {...register("email")}
                 disabled={isSubmitting}
               />
@@ -97,11 +97,11 @@ export default function ApplyPage() {
 
             {/* Phone */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-slate-700">Phone Number *</label>
+              <label htmlFor="phone" className="block text-sm font-medium text-foreground">Phone Number *</label>
               <input
                 id="phone"
                 type="tel"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:opacity-50"
+                className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-background text-foreground px-3 py-2 text-sm focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50 transition-colors"
                 {...register("phone")}
                 disabled={isSubmitting}
               />
@@ -110,11 +110,11 @@ export default function ApplyPage() {
 
             {/* Occupation */}
             <div>
-              <label htmlFor="occupation" className="block text-sm font-medium text-slate-700">Current Occupation / Business *</label>
+              <label htmlFor="occupation" className="block text-sm font-medium text-foreground">Current Occupation / Business *</label>
               <input
                 id="occupation"
                 type="text"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:opacity-50"
+                className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-background text-foreground px-3 py-2 text-sm focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50 transition-colors"
                 {...register("occupation")}
                 disabled={isSubmitting}
               />
@@ -123,7 +123,7 @@ export default function ApplyPage() {
 
             {/* Potential Clients */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-slate-700">Do you currently have potential clients in mind? *</label>
+              <label className="block text-sm font-medium text-foreground">Do you currently have potential clients in mind? *</label>
               <div className="flex gap-4">
                 <label className="flex items-center">
                   <input
@@ -152,12 +152,12 @@ export default function ApplyPage() {
 
             {/* Potential Client Type (Optional) */}
             <div>
-              <label htmlFor="potentialClientType" className="block text-sm font-medium text-slate-700">What type of clients? (Optional)</label>
+              <label htmlFor="potentialClientType" className="block text-sm font-medium text-foreground">What type of clients? (Optional)</label>
               <input
                 id="potentialClientType"
                 type="text"
                 placeholder="e.g. Local restaurants, Ecommerce stores"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:opacity-50"
+                className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-background text-foreground px-3 py-2 text-sm focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50 transition-colors"
                 {...register("potentialClientType")}
                 disabled={isSubmitting}
               />
@@ -166,11 +166,11 @@ export default function ApplyPage() {
 
             {/* Reason */}
             <div>
-              <label htmlFor="reason" className="block text-sm font-medium text-slate-700">Why do you want to join the Partner Program? *</label>
+              <label htmlFor="reason" className="block text-sm font-medium text-foreground">Why do you want to join the Partner Program? *</label>
               <textarea
                 id="reason"
                 rows={4}
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:opacity-50"
+                className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-background text-foreground px-3 py-2 text-sm focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50 transition-colors"
                 {...register("reason")}
                 disabled={isSubmitting}
               />
@@ -179,11 +179,11 @@ export default function ApplyPage() {
 
             {/* Source */}
             <div>
-              <label htmlFor="source" className="block text-sm font-medium text-slate-700">How did you hear about us? (Optional)</label>
+              <label htmlFor="source" className="block text-sm font-medium text-foreground">How did you hear about us? (Optional)</label>
               <input
                 id="source"
                 type="text"
-                className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:opacity-50"
+                className="block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-background text-foreground px-3 py-2 text-sm focus:border-brand-gold focus:outline-none focus:ring-1 focus:ring-brand-gold disabled:opacity-50 transition-colors"
                 {...register("source")}
                 disabled={isSubmitting}
               />
@@ -195,7 +195,7 @@ export default function ApplyPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-900/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-brand-navy bg-brand-gold hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-gold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isSubmitting ? "Submitting..." : "Submit Application"}
               </button>

@@ -62,7 +62,7 @@ export default function LoginForm() {
       )}
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700 text-left">
+        <label className="block text-sm font-medium text-foreground text-left">
           Email
         </label>
         <input
@@ -70,7 +70,7 @@ export default function LoginForm() {
           type="email"
           autoComplete="email"
           disabled={isLoading}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300"
+          className="w-full px-3 py-2 bg-background text-foreground border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors"
         />
         {errors.email && (
           <p className="text-sm text-red-600 text-left">{errors.email.message}</p>
@@ -78,7 +78,7 @@ export default function LoginForm() {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700 text-left">
+        <label className="block text-sm font-medium text-foreground text-left">
           Password
         </label>
         <div className="relative">
@@ -87,12 +87,12 @@ export default function LoginForm() {
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             disabled={isLoading}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 pr-10"
+            className="w-full px-3 py-2 bg-background text-foreground border border-slate-300 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-gold transition-colors pr-10"
           />
           <button
             type="button"
             tabIndex={-1}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-brand-gold transition-colors"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -106,7 +106,7 @@ export default function LoginForm() {
       <div className="flex justify-end">
         <Link
           href="/forgot-password"
-          className="text-sm text-slate-500 hover:text-slate-900 hover:underline"
+          className="text-sm text-slate-500 hover:text-brand-gold hover:underline transition-colors"
         >
           Forgot password?
         </Link>
@@ -115,7 +115,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2.5 px-4 bg-slate-900 text-white rounded-md hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 disabled:opacity-50 transition-colors"
+        className="w-full py-2.5 px-4 bg-brand-gold text-brand-navy font-bold rounded-md hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-gold disabled:opacity-50 transition-colors"
       >
         {isLoading ? "Signing in..." : "Sign in"}
       </button>
