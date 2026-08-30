@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import Link from "next/link";
 
 type LoginValues = {
   email: string;
@@ -31,7 +32,6 @@ export default function LoginForm() {
         email: data.email,
         password: data.password,
       });
-      console.log("SIGNIN RESULT:", result);
 
       if (result?.error) {
         setError("Invalid email or password.");
@@ -89,6 +89,15 @@ export default function LoginForm() {
         {errors.password && (
           <p className="text-sm text-red-600 text-left">{errors.password.message}</p>
         )}
+      </div>
+
+      <div className="flex justify-end">
+        <Link
+          href="/forgot-password"
+          className="text-sm text-slate-500 hover:text-slate-900 hover:underline"
+        >
+          Forgot password?
+        </Link>
       </div>
 
       <button
