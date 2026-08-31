@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Globe, ShieldCheck, TrendingUp, Users } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function LandingPage() {
   return (
@@ -14,13 +15,14 @@ export default function LandingPage() {
             Cortex <span className="text-brand-gold">Partner</span>
           </span>
         </Link>
-        <nav className="ml-auto flex gap-6 sm:gap-8 items-center">
-          <Link className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" href="#how-it-works">
+        <nav className="ml-auto flex gap-4 sm:gap-8 items-center">
+          <Link className="hidden sm:inline-block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" href="#how-it-works">
             How it Works
           </Link>
-          <Link className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" href="#benefits">
+          <Link className="hidden sm:inline-block text-sm font-medium text-muted-foreground hover:text-foreground transition-colors" href="#benefits">
             Benefits
           </Link>
+          <ThemeToggle />
           <Link 
             className="text-sm font-bold text-brand-navy bg-brand-gold px-4 py-2 rounded-full hover:bg-yellow-400 transition-colors shadow-md" 
             href="/login"
