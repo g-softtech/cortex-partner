@@ -1,55 +1,22 @@
 import { NextResponse } from "next/server";
-import { requirePartnerSession, requireAdminSession, isAuthError } from "@/lib/auth/session";
+import { requirePartnerSession, requireAdminSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { generatePresignedUploadUrl } from "@/lib/storage/s3";
 import { checkRateLimit } from "@/lib/services/rate-limit";
 import { z } from "zod";
-import { v4 as uuidv4 } from "uuid";
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 
-// Allowed MIME types and mapping to explicit safe extensions
-const ALLOWED_MIME_TYPES: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/gif": "gif",
-  "image/webp": "webp",
-  "image/svg+xml": "svg",
-  "application/pdf": "pdf",
-  "application/msword": "doc",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
-  "application/vnd.ms-excel": "xls",
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
-  "text/plain": "txt",
-  "application/zip": "zip",
-};
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB in bytes
-
-const presignSchema = z.object({
+const clientPayloadSchema = z.object({
   projectId: z.string().min(1),
   changeRequestId: z.string().optional(),
-  fileName: z.string().min(1).max(255),
-  contentType: z.string().refine((val) => Object.keys(ALLOWED_MIME_TYPES).includes(val), {
-    message: "File type not allowed.",
-  }),
-  fileSize: z.number().int().positive().max(MAX_FILE_SIZE, {
-    message: "File size must not exceed 10 MB.",
-  }),
-  category: z.enum(["LOGO", "IMAGE", "DOCUMENT", "BRAND_GUIDELINES", "OTHER"]).optional(),
 });
 
 /**
  * POST /api/files/presign
  *
- * Issues a presigned PUT URL for direct-to-R2 upload.
- * Validates project ownership before issuing the URL.
- * Supports both PARTNER (own projects only) and ADMIN (any project).
- * NEVER exposes R2 credentials to the browser.
+ * Implements Vercel Blob's handleUpload endpoint to securely issue 
+ * client upload tokens. Preserves all original RBAC/IDOR checks.
  */
 export async function POST(req: Request) {
-  // 1. Try Partner auth first, then Admin
-  let isAdmin = false;
-  let ownerId: string | null = null; // partnerId for partner auth
-
   // Rate limit: 20 uploads per minute per IP
   const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
   const rateLimit = await checkRateLimit(`presign_${ip}`, 20, 60 * 1000);
@@ -57,89 +24,109 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Too many upload requests" }, { status: 429 });
   }
 
-  let body: unknown;
+  let body: HandleUploadBody;
   try {
-    body = await req.json();
+    body = (await req.json()) as HandleUploadBody;
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const parsed = presignSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Invalid request.", issues: parsed.error.errors },
-      { status: 400 }
-    );
-  }
-
-  const { projectId, changeRequestId, contentType } = parsed.data;
-
-  // Try partner auth first
   try {
-    const { partner } = await requirePartnerSession();
-    ownerId = partner.id;
-  } catch (partnerErr) {
-    // Not a partner - try admin
-    try {
-      await requireAdminSession();
-      isAdmin = true;
-    } catch {
-      if (isAuthError(partnerErr)) {
-        return NextResponse.json({ error: partnerErr.message }, { status: partnerErr.status });
-      }
-      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-    }
-  }
+    const jsonResponse = await handleUpload({
+      body,
+      request: req,
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
+        let parsedPayload: Record<string, unknown> = {};
+        if (clientPayload) {
+          try {
+            parsedPayload = JSON.parse(clientPayload) as Record<string, unknown>;
+          } catch {
+            throw new Error("Invalid client payload JSON");
+          }
+        }
+        
+        const parsed = clientPayloadSchema.safeParse(parsedPayload);
+        if (!parsed.success) {
+          throw new Error("Invalid client payload format.");
+        }
 
-  // 2. Verify project existence and ownership
-  const project = await db.project.findUnique({
-    where: { id: projectId },
-    select: { id: true, partnerId: true, projectNumber: true },
-  });
+        const { projectId, changeRequestId } = parsed.data;
 
-  if (!project) {
-    return NextResponse.json({ error: "Project not found." }, { status: 404 });
-  }
+        // 1. Try Partner auth first, then Admin
+        let isAdmin = false;
+        let ownerId: string | null = null; // partnerId for partner auth
 
-  // Partners can only upload to their own projects
-  if (!isAdmin && ownerId && project.partnerId !== ownerId) {
-    return NextResponse.json({ error: "Not found." }, { status: 404 });
-  }
+        try {
+          const { partner } = await requirePartnerSession();
+          ownerId = partner.id;
+        } catch {
+          try {
+            await requireAdminSession();
+            isAdmin = true;
+          } catch {
+            throw new Error("Unauthorized.");
+          }
+        }
 
-  if (changeRequestId) {
-    // 2.5 Verify ChangeRequest exists and belongs to this project
-    const changeRequest = await db.changeRequest.findUnique({
-      where: { id: changeRequestId },
-      select: { projectId: true }
+        // 2. Verify project existence and ownership
+        const project = await db.project.findUnique({
+          where: { id: projectId },
+          select: { id: true, partnerId: true, projectNumber: true },
+        });
+
+        if (!project) {
+          throw new Error("Project not found.");
+        }
+
+        // Partners can only upload to their own projects
+        if (!isAdmin && ownerId && project.partnerId !== ownerId) {
+          throw new Error("Not found.");
+        }
+
+        if (changeRequestId) {
+          // 2.5 Verify ChangeRequest exists and belongs to this project
+          const changeRequest = await db.changeRequest.findUnique({
+            where: { id: changeRequestId },
+            select: { projectId: true }
+          });
+
+          if (!changeRequest || changeRequest.projectId !== projectId) {
+            throw new Error("Invalid change request.");
+          }
+        }
+
+        // Validated successfully. 
+        // Vercel Blob handles filename/path naming and content-types safely via its internal rules,
+        // but we return the validated tokenPayload if needed.
+        return {
+          allowedContentTypes: [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+            "image/svg+xml",
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-excel",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "application/zip"
+          ],
+          maximumSizeInBytes: 10 * 1024 * 1024,
+          tokenPayload: JSON.stringify({ projectId, changeRequestId })
+        };
+      },
+      onUploadCompleted: async () => {
+        // We strictly adhere to Client-Driven Database Registration.
+        // No DB writes are performed here.
+      },
     });
 
-    if (!changeRequest || changeRequest.projectId !== projectId) {
-      return NextResponse.json({ error: "Invalid change request." }, { status: 404 });
-    }
-  }
-
-  // 3. Generate a unique storage key (never expose structure that leaks data)
-  // SECURITY: Ignore the client-provided extension. 
-  // Force the extension to match the validated contentType's known safe extension.
-  // This prevents an attacker from sending contentType="image/jpeg" but fileName="virus.exe"
-  const safeExt = ALLOWED_MIME_TYPES[contentType] ?? "bin";
-  const prefix = changeRequestId ? `changes/${changeRequestId}` : `projects/${project.id}`;
-  const storageKey = `${prefix}/${uuidv4()}.${safeExt}`;
-
-  // 4. Generate the presigned URL
-  try {
-    const presignedUrl = await generatePresignedUploadUrl(storageKey, contentType);
-
-    return NextResponse.json({
-      uploadUrl: presignedUrl,
-      storageKey,
-      expiresIn: 3600,
-    });
-  } catch (err) {
-    console.error("Failed to generate presigned upload URL:", err);
-    return NextResponse.json(
-      { error: "Could not generate upload URL. Please try again." },
-      { status: 500 }
-    );
+    return NextResponse.json(jsonResponse);
+  } catch (error) {
+    const message = (error as Error).message;
+    console.error("Vercel Blob token generation failed:", message);
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

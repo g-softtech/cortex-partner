@@ -2,6 +2,8 @@
 
 import { useState, useRef } from "react";
 
+import { upload } from "@vercel/blob/client";
+
 interface ChangeRequestFileUploadProps {
   projectId: string;
   changeRequestId: string;
@@ -35,39 +37,18 @@ export function ChangeRequestFileUpload({ projectId, changeRequestId, label, acc
     }
 
     try {
-      // Step 1: Request a presigned URL from the server
-      setProgress(20);
-      const presignRes = await fetch("/api/files/presign", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId,
-          changeRequestId,
-          fileName: file.name,
-          contentType: file.type,
-          fileSize: file.size,
-        }),
+      // Step 1 & 2: Upload directly to Vercel Blob via our token route
+      const newBlob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/files/presign',
+        clientPayload: JSON.stringify({ projectId, changeRequestId }),
+        onUploadProgress: (progressEvent) => {
+          // Vercel Blob progress ranges from 0 to 100
+          setProgress(10 + Math.floor(progressEvent.percentage * 0.65));
+        },
       });
 
-      if (!presignRes.ok) {
-        const data = await presignRes.json();
-        throw new Error(data.error || "Failed to get upload URL.");
-      }
-
-      const { uploadUrl, storageKey } = await presignRes.json();
-      setProgress(40);
-
-      // Step 2: Upload directly to R2 via the presigned URL
-      const uploadRes = await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-
-      if (!uploadRes.ok) {
-        throw new Error("Upload to storage failed. Please try again.");
-      }
-
+      const storageKey = newBlob.url;
       setProgress(75);
 
       // Step 3: Register the file record in the database

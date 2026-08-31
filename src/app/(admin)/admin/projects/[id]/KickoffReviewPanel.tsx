@@ -73,23 +73,12 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const canReview = kickoff.status === KickoffStatus.SUBMITTED;
 
   const handleDownload = async (fileId: string) => {
-    setDownloadingId(fileId);
-    try {
-      const res = await fetch(`/api/files/download/${fileId}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      // Open the presigned URL
-      window.open(data.downloadUrl, "_blank");
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Download failed.");
-    } finally {
-      setDownloadingId(null);
-    }
+    // Open the proxied download route directly
+    window.open(`/api/files/download/${fileId}`, "_blank");
   };
 
   const handleReview = async (decision: "APPROVED" | "INFORMATION_REQUIRED") => {
@@ -202,10 +191,9 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
                 </span>
                 <button
                   onClick={() => handleDownload(f.id)}
-                  disabled={downloadingId === f.id}
                   className="rounded px-2 py-1 text-xs font-medium text-indigo-600 hover:bg-indigo-50 disabled:opacity-50"
                 >
-                  {downloadingId === f.id ? "Loading…" : "Download"}
+                  Download
                 </button>
               </li>
             ))}
