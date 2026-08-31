@@ -85,7 +85,7 @@ export default function ApplicationDetailClient({ application }: { application: 
   return (
     <div className="space-y-6">
       {/* Status + Actions */}
-      <div className="bg-white border rounded-lg p-6">
+      <div className="bg-card border-border border rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Status</p>
@@ -153,8 +153,8 @@ export default function ApplicationDetailClient({ application }: { application: 
       </div>
 
       {/* Application Details */}
-      <div className="bg-white border rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-slate-900 mb-5">Application Details</h2>
+      <div className="bg-card border-border border rounded-lg p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-5">Application Details</h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
           <div>
             <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Application Number</dt>
