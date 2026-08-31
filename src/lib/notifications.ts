@@ -28,7 +28,7 @@ interface NotifyUserParams {
  * 
  * @returns A function to execute after the transaction commits to actually send the email.
  */
-export async function notifyUser(params: NotifyUserParams, skipInApp: boolean = false): Promise<() => void> {
+export async function notifyUser(params: NotifyUserParams, skipInApp: boolean = false): Promise<() => Promise<void>> {
   // 1. Create the in-app notification reliably within the provided transaction
   if (!skipInApp) {
     await params.tx.notification.create({
@@ -42,33 +42,33 @@ export async function notifyUser(params: NotifyUserParams, skipInApp: boolean = 
   }
 
   // 2. Return the email dispatcher
-  return () => {
+  return async () => {
     if (params.email && process.env.RESEND_API_KEY && resend) {
-      // Fire and forget (decoupled from caller)
-      (async () => {
-        try {
-          await resend.emails.send({
-            from: "Cortex Partner Program <build@thecortexsystems.com>",
-            to: params.email!.to,
-            subject: params.email!.subject,
-            html: params.email!.html,
-          });
-        } catch (err) {
-          console.error(`Failed to send email to ${params.email!.to}:`, err);
-          // Suppress error to avoid breaking any callers (though it's detached anyway)
+      try {
+        const { error } = await resend.emails.send({
+          from: "Cortex Partner Program <build@thecortexsystems.com>",
+          to: params.email!.to,
+          subject: params.email!.subject,
+          html: params.email!.html,
+        });
+        
+        if (error) {
+          console.error(`Resend API error sending email to ${params.email!.to}:`, error);
         }
-      })();
+      } catch (err) {
+        console.error(`Failed to send email to ${params.email!.to}:`, err);
+      }
     }
   };
 }
 
-export async function notifyAdmins(params: Omit<NotifyUserParams, "userId" | "email"> & { email?: { subject: string; html: string } }): Promise<() => void> {
+export async function notifyAdmins(params: Omit<NotifyUserParams, "userId" | "email"> & { email?: { subject: string; html: string } }): Promise<() => Promise<void>> {
   const admins = await params.tx.user.findMany({
     where: { role: "ADMIN" },
     select: { id: true, email: true },
   });
 
-  const dispatchers: (() => void)[] = [];
+  const dispatchers: (() => Promise<void>)[] = [];
 
   for (const admin of admins) {
     const dispatch = await notifyUser({
@@ -82,7 +82,7 @@ export async function notifyAdmins(params: Omit<NotifyUserParams, "userId" | "em
     dispatchers.push(dispatch);
   }
 
-  return () => {
-    dispatchers.forEach(d => d());
+  return async () => {
+    await Promise.all(dispatchers.map(d => d()));
   };
 }
