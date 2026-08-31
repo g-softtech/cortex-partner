@@ -5,10 +5,19 @@ import { checkRateLimit } from "@/lib/services/rate-limit";
 import { z } from "zod";
 import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 
-const clientPayloadSchema = z.object({
-  projectId: z.string().min(1),
-  changeRequestId: z.string().optional(),
-});
+const clientPayloadSchema = z.discriminatedUnion("uploadType", [
+  // Project file (kickoff, change request)
+  z.object({
+    uploadType: z.literal("project"),
+    projectId: z.string().min(1),
+    changeRequestId: z.string().optional(),
+  }),
+  // Support request attachment
+  z.object({
+    uploadType: z.literal("support"),
+    supportRequestId: z.string().min(1),
+  }),
+]);
 
 /**
  * POST /api/files/presign
@@ -50,11 +59,9 @@ export async function POST(req: Request) {
           throw new Error("Invalid client payload format.");
         }
 
-        const { projectId, changeRequestId } = parsed.data;
-
         // 1. Try Partner auth first, then Admin
         let isAdmin = false;
-        let ownerId: string | null = null; // partnerId for partner auth
+        let ownerId: string | null = null;
 
         try {
           const { partner } = await requirePartnerSession();
@@ -67,6 +74,30 @@ export async function POST(req: Request) {
             throw new Error("Unauthorized.");
           }
         }
+
+        if (parsed.data.uploadType === "support") {
+          // Support request upload — verify ownership
+          const { supportRequestId } = parsed.data;
+          const supportReq = await db.supportRequest.findUnique({
+            where: { id: supportRequestId },
+            select: { id: true, partner: { select: { id: true } } },
+          });
+          if (!supportReq) throw new Error("Support request not found.");
+          if (!isAdmin && ownerId && supportReq.partner.id !== ownerId) {
+            throw new Error("Not found.");
+          }
+          return {
+            allowedContentTypes: [
+              "image/jpeg", "image/png", "image/gif", "image/webp",
+              "application/pdf",
+            ],
+            maximumSizeInBytes: 10 * 1024 * 1024,
+            tokenPayload: JSON.stringify({ uploadType: "support", supportRequestId }),
+          };
+        }
+
+        // Project upload (existing logic)
+        const { projectId, changeRequestId } = parsed.data;
 
         // 2. Verify project existence and ownership
         const project = await db.project.findUnique({
@@ -114,7 +145,7 @@ export async function POST(req: Request) {
             "application/zip"
           ],
           maximumSizeInBytes: 10 * 1024 * 1024,
-          tokenPayload: JSON.stringify({ projectId, changeRequestId })
+          tokenPayload: JSON.stringify({ uploadType: "project", projectId, changeRequestId })
         };
       },
       onUploadCompleted: async () => {

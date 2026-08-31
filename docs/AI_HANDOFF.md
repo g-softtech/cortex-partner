@@ -17,31 +17,74 @@ Do NOT:
 
 ## Status Overview
 
-**Current Phase:** Phase 15 - Testing (Next)
-**Last Completed:** Phase 14 - Security & Hardening
-**Date:** 2026-08-29
+**Current Phase:** Phase 16 - Document & Form Integration ✅ COMPLETE
+**Last Completed:** Phase 16 - Document & Form Integration
+**Date:** 2026-08-31
 
-**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, and 14.
+**COMPLETED:** Phase 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, and 15.
 
 ---
 
 ## What Was Just Completed
 
-**Phase 14: Security & Hardening**
-Conducted a global authorization audit across all routes, verifying strict `requirePartnerSession` and `requireAdminSession` boundaries. Implemented strict mapping of MIME types to file extensions in S3 presigned URLs, mitigating extension spoofing. Added standard rate limits to setup and presign endpoints. Integrated Next.js security headers in `next.config.mjs`.
+**Phase 16: Document & Form Integration — Stage 1/6: Database Schema**
+
+Migration `20260831171732_add_partner_agreements_and_support_files` applied successfully.
+
+Changes:
+- Added `PartnerAgreementLog` model — tracks Partner acceptance of versioned legal agreements (version string, acceptedAt, ipAddress). Historical records are permanent; new versions do not overwrite old ones.
+- Added `SupportRequestFile` model — Vercel Blob attachments for support tickets.
+- Added optional `projectId` to `SupportRequest` — partners can now link a support ticket to a specific project.
+- Added `SupportRequestFile[]` relation to `User` and `SupportRequest`.
+- Added `PartnerAgreementLog[]` relation to `Partner`.
+- Added `SupportRequest[]` relation to `Project`.
+
+**Architecture Context (corrected):**
+- Storage has been migrated from Cloudflare R2 → **Vercel Blob** (`@vercel/blob`). Do NOT reintroduce Cloudflare/S3.
+- The Prisma schema is now **live** (not frozen) with the additive migration above.
 
 ---
 
-## Architecture Context
+## Stage 2/6: COMPLETE — Support File Storage
+## Stage 3/6: COMPLETE — Partner Agreement Onboarding
+## Stage 4/6: COMPLETE — Dashboard Contextual Actions
+## Stage 5/6: COMPLETE — FAQ Resource
+## Stage 6/6: IN PROGRESS — Test Suite
 
-*   **Framework:** Next.js 14 App Router.
-*   **Database:** PostgreSQL via Prisma.
-*   **Storage:** Cloudflare R2 (S3 compatible) for `ProjectFile`s and `ChangeRequestFile`s.
-*   **Authentication:** NextAuth (Google Provider).
-*   **Schema:** The Prisma schema is **FROZEN**. New data requirements must fit into existing JSON fields or `AuditLog.metadata`.
-*   **Security:** Enforced via `requirePartnerSession` and `requireAdminSession`. Partner endpoints strictly validate `partnerId` matching the authenticated session. Change Request attachments validate `ChangeRequest -> Project -> Partner -> User` ownership.
+### New Files Created
+- `src/lib/agreements/partner-agreement.ts` — Versioned agreement text (v1.0 immutable)
+- `src/app/(dashboard)/onboarding/agreement/page.tsx` — Agreement server page
+- `src/app/(dashboard)/onboarding/agreement/AgreementAcceptForm.tsx` — Agreement client form
+- `src/app/api/partners/accept-agreement/route.ts` — Agreement acceptance API
+- `src/app/(dashboard)/support/new/NewSupportForm.tsx` — Enhanced support form (project selector + file upload)
+- `src/app/api/support/[id]/files/route.ts` — Support file registration endpoint
+- `src/app/(dashboard)/resources/faqs/page.tsx` — FAQ resource page
 
-### Next Steps (Phase 15: Testing)
-1.  Read `docs/ROADMAP.md` to see Phase 15 goals.
-2.  Review `docs/PHASES/PHASE_14.md` for context on the recently completed security hardening.
-3.  Do not attempt to rewrite or refactor completed phases unless specifically requested by the user.
+### Modified Files
+- `prisma/schema.prisma` — Added `PartnerAgreementLog`, `SupportRequestFile`, `SupportRequest.projectId`
+- `src/app/api/files/presign/route.ts` — Extended for `uploadType: 'support'`
+- `src/app/api/files/download/[id]/route.ts` — Extended for `SupportRequestFile` with IDOR checks
+- `src/app/(dashboard)/dashboard/page.tsx` — Agreement + contextual action banners
+- `src/app/(dashboard)/resources/page.tsx` — FAQ tile added
+- `src/app/api/support/route.ts` — Persists optional `projectId`
+- `src/lib/validations/support.ts` — Added optional `projectId` field
+
+### Verification
+- `prisma migrate dev` ✅ (public schema)
+- `prisma migrate deploy` ✅ (test_suite schema baselined + migrated)
+- `tsc --noEmit` ✅
+- `lint` ✅
+- `build` ✅ (37 pages)
+- `test:unit` ✅ (11/11)
+- `test:e2e` ✅ (8/8)
+
+### Next Steps for Production
+1. Deploy to Vercel — `prisma migrate deploy` runs automatically and will apply the new migration to production.
+2. Get legal sign-off on Partner Agreement Version 1.0 text before enforcing for live partners.
+3. The agreement version `CURRENT_AGREEMENT_VERSION` in `src/lib/agreements/partner-agreement.ts` controls which version is presented. Update it when a new version is ready.
+
+### Critical Rules
+- Do NOT use `prisma db push` in production.
+- Do NOT reset, drop, or recreate the production database.
+- Do NOT upgrade dependencies.
+- `prisma migrate deploy` runs automatically on Vercel deploy.

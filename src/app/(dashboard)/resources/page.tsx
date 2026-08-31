@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Briefcase, Paintbrush } from "lucide-react";
+import { BookOpen, Briefcase, Paintbrush, HelpCircle } from "lucide-react";
+
 
 export default function ResourcesPage() {
   const resources = [
@@ -26,7 +27,15 @@ export default function ResourcesPage() {
       href: "/resources/white-label",
       color: "bg-purple-50 text-purple-700",
     },
+    {
+      title: "Frequently Asked Questions",
+      description: "Quick answers to common questions about the Partner Program, projects, pricing, and support.",
+      icon: HelpCircle,
+      href: "/resources/faqs",
+      color: "bg-amber-50 text-amber-700",
+    },
   ];
+
 
   return (
     <div className="space-y-6">

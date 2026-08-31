@@ -28,7 +28,8 @@ Partner
  ├── User (1:1)
  ├── PartnerApplication (1:0..1)
  ├── Project (1:many)
- └── SupportRequest (1:many)
+ ├── SupportRequest (1:many)
+ └── PartnerAgreementLog (1:many)
 
 Project
  ├── Partner (many:1)
@@ -52,7 +53,13 @@ ChangeRequestFile
  └── User/uploadedBy (many:1)
 
 SupportRequest
- └── Partner (many:1)
+ ├── Partner (many:1)
+ ├── Project (many:0..1)
+ └── SupportRequestFile (1:many)
+ 
+SupportRequestFile
+ ├── SupportRequest (many:1)
+ └── User/uploadedBy (many:1)
 
 Notification
  └── User (many:1)
@@ -125,6 +132,10 @@ Sequence
 | ChangeRequestFile → ChangeRequest | RESTRICT |
 | ChangeRequestFile → User | RESTRICT |
 | SupportRequest → Partner | RESTRICT |
+| SupportRequest → Project | SET NULL |
+| SupportRequestFile → SupportRequest | RESTRICT |
+| SupportRequestFile → User | RESTRICT |
+| PartnerAgreementLog → Partner | RESTRICT |
 | AuditLog → User | RESTRICT |
 
 Projects, Kickoffs, and Support should be transitioned to ARCHIVED/CANCELLED states rather than physically deleted.

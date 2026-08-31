@@ -70,12 +70,30 @@ export async function GET(
       originalName = crFile.originalName;
       storageReference = crFile.storageReference;
       projectPartnerId = crFile.changeRequest.project.partnerId;
+    } else {
+      // Check SupportRequestFile
+      const supportFile = await db.supportRequestFile.findUnique({
+        where: { id: params.id },
+        select: {
+          storageReference: true,
+          originalName: true,
+          fileType: true,
+          supportRequest: { select: { partner: { select: { id: true } } } },
+        },
+      });
+      if (supportFile) {
+        fileType = supportFile.fileType;
+        originalName = supportFile.originalName;
+        storageReference = supportFile.storageReference;
+        projectPartnerId = supportFile.supportRequest.partner.id;
+      }
     }
   }
 
   if (!storageReference || !originalName) {
     return NextResponse.json({ error: "File not found." }, { status: 404 });
   }
+
 
   // 3. IDOR check
   if (!isAdmin && ownerId && projectPartnerId !== ownerId) {

@@ -1,4 +1,12 @@
 ## [Unreleased]
+- **Phase 16: Document & Form Integration**
+  - **Database:** Migration `20260831171732_add_partner_agreements_and_support_files` applied. Added `PartnerAgreementLog`, `SupportRequestFile`, optional `projectId` on `SupportRequest`.
+  - **Partner Agreement:** Immutable Version 1.0 text in `src/lib/agreements/partner-agreement.ts`. New `/onboarding/agreement` page with scrollable text and mandatory checkbox. New `POST/GET /api/partners/accept-agreement` endpoint. Acceptance recorded in `PartnerAgreementLog` and `AuditLog`.
+  - **Dashboard:** Agreement banner (amber) shown when partner has not accepted current version. Contextual Next Action banner (blue) driven by project status — directs partner to their most urgent task.
+  - **Support:** Enhanced `/support/new` with optional project selector and Vercel Blob screenshot/file attachment. New `POST /api/support/[id]/files` client-driven DB registration endpoint. Presign route extended for `uploadType: 'support'`. Download proxy extended to handle `SupportRequestFile` with IDOR checks.
+  - **Resources:** New `/resources/faqs` page with 5 structured FAQ sections. FAQ tile added to `/resources` hub.
+  - **Verification:** `prisma validate` ✅ · `tsc --noEmit` ✅ · `lint` ✅ · `build` ✅ · `test:unit 11/11` ✅
+
 - **Phase 9: Development Workflow**
   - Implemented Admin API & UI for progressing projects through development states.
   - Implemented Partner API & UI for approving development stages and reporting issues.

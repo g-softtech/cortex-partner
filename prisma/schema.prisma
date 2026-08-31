@@ -144,6 +144,7 @@ model User {
   auditLogs       AuditLog[] 
   uploadedFiles   ProjectFile[] 
   changeFiles     ChangeRequestFile[]
+  supportFiles    SupportRequestFile[]
   notifications   Notification[]
   
   createdAt     DateTime  @default(now())
@@ -229,6 +230,7 @@ model Partner {
   application           PartnerApplication? @relation(fields: [partnerApplicationId], references: [id], onDelete: SetNull)
   projects              Project[]
   supportRequests       SupportRequest[]
+  agreements            PartnerAgreementLog[]
   
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
@@ -264,6 +266,7 @@ model Project {
   kickoff           ProjectKickoff?
   files             ProjectFile[]
   changeRequests    ChangeRequest[]
+  supportRequests   SupportRequest[]
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -347,6 +350,25 @@ model ChangeRequestFile {
   createdAt        DateTime @default(now())
 }
 
+model SupportRequestFile {
+  id               String   @id @default(cuid())
+  fileName         String
+  originalName     String
+  fileType         String
+  fileSize         Int
+  storageReference String   @unique
+  
+  supportRequestId String
+  uploadedById     String
+  
+  supportRequest   SupportRequest @relation(fields: [supportRequestId], references: [id], onDelete: Restrict)
+  uploadedBy       User     @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  
+  createdAt        DateTime @default(now())
+  
+  @@index([supportRequestId])
+}
+
 // ==========================================
 // SUPPORT & MAINTENANCE
 // ==========================================
@@ -377,10 +399,16 @@ model SupportRequest {
   partnerId     String 
   partner       Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
   
+  projectId     String?
+  project       Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  
+  files         SupportRequestFile[]
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   
   @@index([partnerId])
+  @@index([projectId])
 }
 
 model Notification {
@@ -413,4 +441,19 @@ model AuditLog {
   createdAt   DateTime @default(now())
   
   @@index([entityType, entityId])
+}
+
+// ==========================================
+// LEGAL & COMPLIANCE
+// ==========================================
+model PartnerAgreementLog {
+  id              String   @id @default(cuid())
+  partnerId       String
+  version         String   // e.g., "1.0"
+  acceptedAt      DateTime @default(now())
+  ipAddress       String?
+  
+  partner         Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
+  
+  @@index([partnerId])
 }

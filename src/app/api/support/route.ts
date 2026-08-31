@@ -73,6 +73,8 @@ export async function POST(req: Request) {
           subject: validData.subject,
           description: validData.description,
           status: "OPEN",
+          // Link to a specific project if provided
+          ...(validData.projectId ? { projectId: validData.projectId } : {}),
         },
       });
 
