@@ -92,15 +92,15 @@ export default function ApplicationDetailClient({ application }: { application: 
       <div className="bg-card border-border border rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Status</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Status</p>
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${STATUS_COLORS[application.status]}`}>
               {STATUS_LABELS[application.status]}
             </span>
           </div>
           {application.partner && (
             <div className="text-right">
-              <p className="text-xs text-slate-500 uppercase tracking-widest mb-1">Partner ID</p>
-              <span className="font-mono font-bold text-slate-900">{application.partner.partnerId}</span>
+              <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Partner ID</p>
+              <span className="font-mono font-bold text-slate-900 dark:text-slate-100">{application.partner.partnerId}</span>
             </div>
           )}
         </div>
@@ -150,7 +150,7 @@ export default function ApplicationDetailClient({ application }: { application: 
         )}
 
         {!canTransition && (
-          <p className="text-sm text-slate-500 mt-2">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
             This application is in a terminal state and cannot be transitioned further.
           </p>
         )}
@@ -197,12 +197,12 @@ export default function ApplicationDetailClient({ application }: { application: 
         <h2 className="text-lg font-semibold text-foreground mb-5">Application Details</h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
           <div>
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Application Number</dt>
-            <dd className="font-mono text-slate-900">{application.applicationNumber}</dd>
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Application Number</dt>
+            <dd className="font-mono text-slate-900 dark:text-slate-100">{application.applicationNumber}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Submitted</dt>
-            <dd className="text-slate-900">
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Submitted</dt>
+            <dd className="text-slate-900 dark:text-slate-100">
               {new Date(application.createdAt).toLocaleString("en-GB", {
                 dateStyle: "long",
                 timeStyle: "short",
@@ -210,40 +210,40 @@ export default function ApplicationDetailClient({ application }: { application: 
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Full Name</dt>
-            <dd className="text-slate-900 font-medium">{application.name}</dd>
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Full Name</dt>
+            <dd className="text-slate-900 dark:text-slate-100 font-medium">{application.name}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Email</dt>
-            <dd className="text-slate-900">{application.email}</dd>
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Email</dt>
+            <dd className="text-slate-900 dark:text-slate-100">{application.email}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Phone</dt>
-            <dd className="text-slate-900">{application.phone}</dd>
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Phone</dt>
+            <dd className="text-slate-900 dark:text-slate-100">{application.phone}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Occupation</dt>
-            <dd className="text-slate-900">{application.occupation}</dd>
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Occupation</dt>
+            <dd className="text-slate-900 dark:text-slate-100">{application.occupation}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Has Potential Clients</dt>
-            <dd className="text-slate-900">{application.hasPotentialClients ? "Yes" : "No"}</dd>
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Has Potential Clients</dt>
+            <dd className="text-slate-900 dark:text-slate-100">{application.hasPotentialClients ? "Yes" : "No"}</dd>
           </div>
           {application.potentialClientType && (
             <div>
-              <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Client Type</dt>
-              <dd className="text-slate-900">{application.potentialClientType}</dd>
+              <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Client Type</dt>
+              <dd className="text-slate-900 dark:text-slate-100">{application.potentialClientType}</dd>
             </div>
           )}
           {application.source && (
             <div>
-              <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">How They Found Us</dt>
-              <dd className="text-slate-900">{application.source}</dd>
+              <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">How They Found Us</dt>
+              <dd className="text-slate-900 dark:text-slate-100">{application.source}</dd>
             </div>
           )}
           <div className="sm:col-span-2">
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-1">Reason for Joining</dt>
-            <dd className="text-slate-900 whitespace-pre-wrap">{application.reason}</dd>
+            <dt className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Reason for Joining</dt>
+            <dd className="text-slate-900 dark:text-slate-100 whitespace-pre-wrap">{application.reason}</dd>
           </div>
         </dl>
       </div>

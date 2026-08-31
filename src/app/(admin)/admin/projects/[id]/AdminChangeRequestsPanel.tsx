@@ -68,32 +68,32 @@ export function AdminChangeRequestsPanel({ projectId, changeRequests }: AdminCha
   };
 
   return (
-    <div className="rounded-lg border bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-base font-semibold text-slate-900">Change Requests</h2>
+    <div className="rounded-lg border bg-white dark:bg-slate-800 p-6 shadow-sm">
+      <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Change Requests</h2>
       
       <div className="space-y-6">
         {changeRequests.map((cr) => {
           const isEditing = editingId === cr.id;
           
           return (
-            <div key={cr.id} className="rounded-lg border bg-slate-50 p-6">
+            <div key={cr.id} className="rounded-lg border bg-slate-50 dark:bg-slate-900/50 p-6">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   Submitted {new Date(cr.createdAt).toLocaleDateString()}
                 </span>
-                <span className="inline-flex items-center rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-slate-800 border">
+                <span className="inline-flex items-center rounded-full bg-white dark:bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200 border">
                   {cr.status.replace(/_/g, " ")}
                 </span>
               </div>
               
               <div className="mt-4">
-                <p className="text-xs font-semibold text-slate-500 uppercase">Partner Request</p>
-                <p className="mt-1 text-sm text-slate-900 whitespace-pre-wrap">{cr.description}</p>
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Partner Request</p>
+                <p className="mt-1 text-sm text-slate-900 dark:text-slate-100 whitespace-pre-wrap">{cr.description}</p>
               </div>
 
               {cr.files.length > 0 && (
-                <div className="mt-4 border-t border-slate-200 pt-4">
-                  <p className="text-xs font-semibold text-slate-500 mb-2">ATTACHED FILES</p>
+                <div className="mt-4 border-t border-slate-200 dark:border-slate-700 pt-4">
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">ATTACHED FILES</p>
                   <ul className="space-y-1">
                     {cr.files.map((file) => (
                       <li key={file.id} className="text-sm">
@@ -112,8 +112,8 @@ export function AdminChangeRequestsPanel({ projectId, changeRequests }: AdminCha
               )}
 
               {isEditing ? (
-                <div className="mt-6 border-t border-slate-200 pt-4">
-                  <h3 className="text-sm font-semibold text-slate-900 mb-4">Manage Request</h3>
+                <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-4">
+                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">Manage Request</h3>
                   
                   {error && (
                     <div className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
@@ -123,11 +123,11 @@ export function AdminChangeRequestsPanel({ projectId, changeRequests }: AdminCha
 
                   <div className="space-y-4 text-sm">
                     <div>
-                      <label className="block font-medium text-slate-700">Status</label>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300">Status</label>
                       <select
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value as RequestStatus)}
-                        className="mt-1 block w-full rounded-md border border-slate-300 py-2 px-3 focus:border-slate-500 focus:outline-none"
+                        className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 py-2 px-3 focus:border-slate-500 focus:outline-none"
                       >
                         {Object.values(RequestStatus).map((status) => (
                           <option key={status} value={status}>
@@ -138,13 +138,13 @@ export function AdminChangeRequestsPanel({ projectId, changeRequests }: AdminCha
                     </div>
 
                     <div>
-                      <label className="block font-medium text-slate-700">Admin Explanation (Visible to Partner)</label>
+                      <label className="block font-medium text-slate-700 dark:text-slate-300">Admin Explanation (Visible to Partner)</label>
                       <textarea
                         value={explanation}
                         onChange={(e) => setExplanation(e.target.value)}
                         rows={3}
                         placeholder="Explain scoping (e.g. why it's additional work) or provide a status update..."
-                        className="mt-1 block w-full rounded-md border border-slate-300 py-2 px-3 focus:border-slate-500 focus:outline-none"
+                        className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 py-2 px-3 focus:border-slate-500 focus:outline-none"
                       />
                     </div>
 
@@ -152,7 +152,7 @@ export function AdminChangeRequestsPanel({ projectId, changeRequests }: AdminCha
                       <button
                         onClick={cancelEditing}
                         disabled={isSaving}
-                        className="rounded-md px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-50"
+                        className="rounded-md px-3 py-1.5 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-slate-800 disabled:opacity-50"
                       >
                         Cancel
                       </button>
@@ -167,19 +167,19 @@ export function AdminChangeRequestsPanel({ projectId, changeRequests }: AdminCha
                   </div>
                 </div>
               ) : (
-                <div className="mt-6 border-t border-slate-200 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   {cr.explanation ? (
                     <div className="text-sm">
-                      <p className="font-semibold text-slate-700">Explanation</p>
-                      <p className="text-slate-600 mt-1">{cr.explanation}</p>
+                      <p className="font-semibold text-slate-700 dark:text-slate-300">Explanation</p>
+                      <p className="text-slate-600 dark:text-slate-400 mt-1">{cr.explanation}</p>
                     </div>
                   ) : (
-                    <p className="text-sm italic text-slate-500">No explanation provided.</p>
+                    <p className="text-sm italic text-slate-500 dark:text-slate-400">No explanation provided.</p>
                   )}
                   
                   <button
                     onClick={() => startEditing(cr)}
-                    className="shrink-0 rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                    className="shrink-0 rounded-md border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:bg-slate-800"
                   >
                     Update Status
                   </button>

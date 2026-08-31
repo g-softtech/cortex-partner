@@ -31,24 +31,24 @@ export default function ResourcesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Partner Resources</h1>
-        <p className="mt-2 text-sm text-slate-500">Access exclusive materials to help you build and sell with Cortex.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Partner Resources</h1>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Access exclusive materials to help you build and sell with Cortex.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {resources.map((resource) => (
           <Link key={resource.title} href={resource.href} className="block group">
-            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md hover:border-slate-300">
+            <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm transition-all hover:shadow-md hover:border-slate-300 dark:border-slate-700">
               <div className="p-6">
                 <div className={`inline-flex rounded-lg p-3 ${resource.color}`}>
                   <resource.icon className="h-6 w-6" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-slate-900 group-hover:text-slate-700">{resource.title}</h3>
-                <p className="mt-2 text-sm text-slate-500">{resource.description}</p>
+                <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-slate-700 dark:text-slate-300">{resource.title}</h3>
+                <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{resource.description}</p>
               </div>
-              <div className="bg-slate-50 px-6 py-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">View Resource</span>
-                <span className="text-slate-400 group-hover:text-slate-600">&rarr;</span>
+              <div className="bg-slate-50 dark:bg-slate-900/50 px-6 py-3 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:text-slate-100">View Resource</span>
+                <span className="text-slate-400 group-hover:text-slate-600 dark:text-slate-400">&rarr;</span>
               </div>
             </div>
           </Link>

@@ -4,19 +4,19 @@ import { ArrowLeft } from "lucide-react";
 export default function WhiteLabelPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Link href="/resources" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-900">
+      <Link href="/resources" className="inline-flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Resources
       </Link>
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">White-label Guidelines</h1>
-        <p className="mt-2 text-base text-slate-500">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">White-label Guidelines</h1>
+        <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
           How to brand Cortex services as your own.
         </p>
       </div>
 
-      <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+      <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
         <div className="prose prose-slate max-w-none">
           <h2>Brand Protection</h2>
           <p>

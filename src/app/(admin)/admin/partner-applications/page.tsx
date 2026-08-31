@@ -60,8 +60,8 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
     <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Partner Applications</h1>
-          <p className="text-sm text-slate-500 mt-1">{total} total application{total !== 1 ? "s" : ""}</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Partner Applications</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} total application{total !== 1 ? "s" : ""}</p>
         </div>
       </div>
 
@@ -77,7 +77,7 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
               className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors ${
                 isActive
                   ? "bg-slate-900 text-white border-slate-900"
-                  : "bg-white text-slate-600 border-slate-300 hover:bg-slate-50"
+                  : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900/50"
               }`}
             >
               {label}
@@ -87,37 +87,37 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
       </div>
 
       {/* Applications Table */}
-      <div className="bg-white rounded-lg border shadow-sm overflow-x-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-lg border shadow-sm overflow-x-auto">
         {applications.length === 0 ? (
-          <div className="p-12 text-center text-slate-500">
+          <div className="p-12 text-center text-slate-500 dark:text-slate-400">
             No applications found{statusFilter ? ` with status "${STATUS_LABELS[statusFilter]}"` : ""}.
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-slate-50">
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Application #</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Name</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Email</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Occupation</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Status</th>
-                <th className="text-left px-4 py-3 font-medium text-slate-600">Submitted</th>
+              <tr className="border-b bg-slate-50 dark:bg-slate-900/50">
+                <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Application #</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Name</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Email</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Occupation</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Status</th>
+                <th className="text-left px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Submitted</th>
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {applications.map((app) => (
-                <tr key={app.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs text-slate-700">{app.applicationNumber}</td>
-                  <td className="px-4 py-3 font-medium text-slate-900">{app.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{app.email}</td>
-                  <td className="px-4 py-3 text-slate-600">{app.occupation}</td>
+                <tr key={app.id} className="hover:bg-slate-50 dark:bg-slate-900/50 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs text-slate-700 dark:text-slate-300">{app.applicationNumber}</td>
+                  <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-100">{app.name}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{app.email}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{app.occupation}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_COLORS[app.status]}`}>
                       {STATUS_LABELS[app.status]}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-500 text-xs">
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">
                     {new Date(app.createdAt).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "short",
@@ -127,7 +127,7 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
                   <td className="px-4 py-3">
                     <Link
                       href={`/admin/partner-applications/${app.id}`}
-                      className="text-slate-700 hover:text-slate-900 underline underline-offset-2 text-xs font-medium"
+                      className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 underline underline-offset-2 text-xs font-medium"
                     >
                       View
                     </Link>
@@ -142,14 +142,14 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Page {page} of {totalPages}
           </p>
           <div className="flex gap-2">
             {page > 1 && (
               <Link
                 href={`/admin/partner-applications?${statusFilter ? `status=${statusFilter}&` : ""}page=${page - 1}`}
-                className="px-3 py-1.5 text-sm border rounded-md bg-white hover:bg-slate-50"
+                className="px-3 py-1.5 text-sm border rounded-md bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900/50"
               >
                 Previous
               </Link>
@@ -157,7 +157,7 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
             {page < totalPages && (
               <Link
                 href={`/admin/partner-applications?${statusFilter ? `status=${statusFilter}&` : ""}page=${page + 1}`}
-                className="px-3 py-1.5 text-sm border rounded-md bg-white hover:bg-slate-50"
+                className="px-3 py-1.5 text-sm border rounded-md bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900/50"
               >
                 Next
               </Link>

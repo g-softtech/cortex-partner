@@ -49,15 +49,15 @@ export function ChangeRequestForm({ projectId }: { projectId: string }) {
       )}
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Description of requested changes
         </label>
-        <p className="mb-2 text-xs text-slate-500">Please provide as much detail as possible.</p>
+        <p className="mb-2 text-xs text-slate-500 dark:text-slate-400">Please provide as much detail as possible.</p>
         <textarea
           {...register("description")}
           id="description"
           rows={6}
-          className="mt-1 block w-full rounded-md border border-slate-300 py-2 px-3 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+          className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 py-2 px-3 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
           placeholder="E.g., We need to update the hero image and change the headline text to..."
         />
         {errors.description && (

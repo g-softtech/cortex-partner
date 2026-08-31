@@ -76,9 +76,9 @@ export default function WorkflowPanel({ projectId, currentStatus }: WorkflowPane
   };
 
   return (
-    <div className="rounded-lg border bg-white p-6 mb-8 border-slate-200 shadow-sm">
-      <h2 className="mb-1 text-base font-semibold text-slate-900">Development Workflow</h2>
-      <p className="mb-5 text-sm text-slate-500">
+    <div className="rounded-lg border bg-white dark:bg-slate-800 p-6 mb-8 border-slate-200 dark:border-slate-700 shadow-sm">
+      <h2 className="mb-1 text-base font-semibold text-slate-900 dark:text-slate-100">Development Workflow</h2>
+      <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
         Manage the project&apos;s development lifecycle. Current state: <strong>{currentStatus.replace(/_/g, " ")}</strong>
       </p>
 
@@ -103,7 +103,7 @@ export default function WorkflowPanel({ projectId, currentStatus }: WorkflowPane
             ))}
           </div>
         ) : (
-          <p className="text-sm text-slate-500 italic">
+          <p className="text-sm text-slate-500 dark:text-slate-400 italic">
             {currentStatus === ProjectStatus.PARTNER_REVIEW || currentStatus === ProjectStatus.CUSTOMER_REVIEW
               ? "Waiting on Partner to review and approve or report an issue."
               : currentStatus === ProjectStatus.DELIVERED 

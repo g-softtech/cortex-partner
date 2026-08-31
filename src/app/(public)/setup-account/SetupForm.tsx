@@ -84,7 +84,7 @@ export default function SetupForm({ token }: SetupFormProps) {
       )}
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700 text-left">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 text-left">
           New Password
         </label>
         <div className="relative">
@@ -95,12 +95,12 @@ export default function SetupForm({ token }: SetupFormProps) {
             })}
             type={showPassword ? "text" : "password"}
             disabled={isLoading}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 pr-10"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 dark:border-slate-700 pr-10"
           />
           <button
             type="button"
             tabIndex={-1}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:text-slate-400"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -112,7 +112,7 @@ export default function SetupForm({ token }: SetupFormProps) {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700 text-left">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 text-left">
           Confirm Password
         </label>
         <div className="relative">
@@ -120,12 +120,12 @@ export default function SetupForm({ token }: SetupFormProps) {
             {...register("confirmPassword", { required: "Please confirm your password." })}
             type={showConfirmPassword ? "text" : "password"}
             disabled={isLoading}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 pr-10"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 dark:border-slate-700 pr-10"
           />
           <button
             type="button"
             tabIndex={-1}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 dark:text-slate-400"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
           >
             {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}

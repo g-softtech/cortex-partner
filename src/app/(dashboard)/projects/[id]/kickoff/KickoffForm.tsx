@@ -102,24 +102,24 @@ export function KickoffForm({
       )}
 
       {/* Section: Business Info */}
-      <div className="rounded-lg border bg-white p-6 space-y-5">
-        <h2 className="text-base font-semibold text-slate-900">Business Information</h2>
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6 space-y-5">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Business Information</h2>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Business Name *</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Business Name *</label>
           <input
             {...register("businessName")}
             disabled={isReadOnly}
-            className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+            className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
           />
           {errors.businessName && <p className="mt-1 text-sm text-red-600">{errors.businessName.message}</p>}
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Business Description *</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Business Description *</label>
           <textarea
             {...register("businessDescription")}
             rows={4}
             disabled={isReadOnly}
-            className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+            className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             placeholder="Describe what your client's business does, their customers, and unique selling points..."
           />
           {errors.businessDescription && <p className="mt-1 text-sm text-red-600">{errors.businessDescription.message}</p>}
@@ -127,35 +127,35 @@ export function KickoffForm({
       </div>
 
       {/* Section: Branding */}
-      <div className="rounded-lg border bg-white p-6 space-y-5">
-        <h2 className="text-base font-semibold text-slate-900">Branding</h2>
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6 space-y-5">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Branding</h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Primary Colour</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Primary Colour</label>
             <input
               {...register("primaryColor")}
               disabled={isReadOnly}
               placeholder="#3B82F6 or 'Royal Blue'"
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Secondary Colour</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Secondary Colour</label>
             <input
               {...register("secondaryColor")}
               disabled={isReadOnly}
               placeholder="#F9FAFB or 'Light Grey'"
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700">Brand Guidelines</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Brand Guidelines</label>
           <textarea
             {...register("brandGuidelines")}
             rows={3}
             disabled={isReadOnly}
-            className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+            className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             placeholder="Describe any brand guidelines, fonts, styles, or tone of voice..."
           />
         </div>
@@ -171,8 +171,8 @@ export function KickoffForm({
       </div>
 
       {/* Section: Content */}
-      <div className="rounded-lg border bg-white p-6 space-y-5">
-        <h2 className="text-base font-semibold text-slate-900">Content</h2>
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6 space-y-5">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Content</h2>
         {[
           { field: "contentAbout" as const, label: "About / Story" },
           { field: "contentServices" as const, label: "Services" },
@@ -181,37 +181,37 @@ export function KickoffForm({
           { field: "socialLinks" as const, label: "Social Media Links" },
         ].map(({ field, label }) => (
           <div key={field}>
-            <label className="block text-sm font-medium text-slate-700">{label}</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
             <textarea
               {...register(field)}
               rows={3}
               disabled={isReadOnly}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             />
           </div>
         ))}
       </div>
 
       {/* Section: Technical */}
-      <div className="rounded-lg border bg-white p-6 space-y-5">
-        <h2 className="text-base font-semibold text-slate-900">Technical Details</h2>
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6 space-y-5">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Technical Details</h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Domain</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Domain</label>
             <input
               {...register("domain")}
               disabled={isReadOnly}
               placeholder="example.com"
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Hosting Status</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Hosting Status</label>
             <input
               {...register("hostingStatus")}
               disabled={isReadOnly}
               placeholder="e.g. Existing cPanel, Need new hosting..."
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             />
           </div>
         </div>
@@ -222,12 +222,12 @@ export function KickoffForm({
           { field: "designReferences" as const, label: "Design References / Inspiration URLs" },
         ].map(({ field, label }) => (
           <div key={field}>
-            <label className="block text-sm font-medium text-slate-700">{label}</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>
             <textarea
               {...register(field)}
               rows={3}
               disabled={isReadOnly}
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50"
+              className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500 disabled:bg-slate-50 dark:bg-slate-900/50"
             />
           </div>
         ))}
@@ -244,17 +244,17 @@ export function KickoffForm({
 
       {/* Uploaded Files */}
       {files.length > 0 && (
-        <div className="rounded-lg border bg-white p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">Uploaded Files</h2>
-          <ul className="divide-y divide-slate-100">
+        <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Uploaded Files</h2>
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {files.map((f) => (
               <li key={f.id} className="flex items-center gap-3 py-3 text-sm">
                 <svg className="h-5 w-5 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
                 </svg>
-                <span className="flex-1 truncate text-slate-900">{f.originalName}</span>
+                <span className="flex-1 truncate text-slate-900 dark:text-slate-100">{f.originalName}</span>
                 <span className="text-slate-400">{formatFileSize(f.fileSize)}</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">{f.category}</span>
+                <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">{f.category}</span>
               </li>
             ))}
           </ul>
@@ -263,13 +263,13 @@ export function KickoffForm({
 
       {/* Actions */}
       {!isReadOnly && (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-white p-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-white dark:bg-slate-800 p-6">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleSave}
               disabled={isSaving || isSubmitting}
-              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+              className="rounded-md border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900/50 disabled:opacity-50"
             >
               {isSaving ? "Saving..." : "Save Draft"}
             </button>

@@ -62,8 +62,8 @@ function Field({ label, value }: { label: string; value: string | null | undefin
   if (!value) return null;
   return (
     <div>
-      <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">{label}</dt>
-      <dd className="mt-1 whitespace-pre-wrap text-sm text-slate-900">{value}</dd>
+      <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">{label}</dt>
+      <dd className="mt-1 whitespace-pre-wrap text-sm text-slate-900 dark:text-slate-100">{value}</dd>
     </div>
   );
 }
@@ -112,12 +112,12 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
   };
 
   return (
-    <div className="rounded-lg border bg-white p-6 space-y-6">
+    <div className="rounded-lg border bg-white dark:bg-slate-800 p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-slate-900">Kickoff Details</h2>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Kickoff Details</h2>
         <span
           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            KICKOFF_STATUS_COLORS[kickoff.status] ?? "bg-slate-100 text-slate-700"
+            KICKOFF_STATUS_COLORS[kickoff.status] ?? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
           }`}
         >
           {kickoff.status.replace(/_/g, " ")}
@@ -136,7 +136,7 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
 
       {/* Business Info */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-slate-700">Business Information</h3>
+        <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Business Information</h3>
         <dl className="space-y-3">
           <Field label="Business Name" value={kickoff.businessName} />
           <Field label="Business Description" value={kickoff.businessDescription} />
@@ -145,7 +145,7 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
 
       {/* Branding */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-slate-700">Branding</h3>
+        <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Branding</h3>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Primary Colour" value={kickoff.primaryColor} />
           <Field label="Secondary Colour" value={kickoff.secondaryColor} />
@@ -157,7 +157,7 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
 
       {/* Content */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-slate-700">Content</h3>
+        <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Content</h3>
         <dl className="space-y-3">
           <Field label="About" value={kickoff.contentAbout} />
           <Field label="Services" value={kickoff.contentServices} />
@@ -169,7 +169,7 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
 
       {/* Technical */}
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-slate-700">Technical Details</h3>
+        <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Technical Details</h3>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Domain" value={kickoff.domain} />
           <Field label="Hosting Status" value={kickoff.hostingStatus} />
@@ -191,13 +191,13 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
       {/* Files */}
       {files.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-slate-700">Uploaded Files</h3>
-          <ul className="divide-y divide-slate-100 rounded-lg border">
+          <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Uploaded Files</h3>
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800 rounded-lg border">
             {files.map((f) => (
               <li key={f.id} className="flex items-center gap-3 px-4 py-3 text-sm">
-                <span className="flex-1 truncate text-slate-900">{f.originalName}</span>
+                <span className="flex-1 truncate text-slate-900 dark:text-slate-100">{f.originalName}</span>
                 <span className="text-slate-400">{formatFileSize(f.fileSize)}</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-600 dark:text-slate-400">
                   {f.category}
                 </span>
                 <button
@@ -216,16 +216,16 @@ export function KickoffReviewPanel({ projectId, kickoff, files }: KickoffReviewP
       {/* Review Actions */}
       {canReview && (
         <div className="border-t pt-5 space-y-4">
-          <h3 className="text-sm font-semibold text-slate-700">Review Decision</h3>
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Review Decision</h3>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
               Admin Notes (visible to admin only)
             </label>
             <textarea
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
               rows={3}
-              className="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
+              className="block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
               placeholder="Internal notes about this kickoff review…"
             />
           </div>

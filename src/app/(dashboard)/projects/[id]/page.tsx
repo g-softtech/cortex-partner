@@ -123,22 +123,22 @@ export default async function ProjectDetailPage({
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div>
-        <Link href="/projects" className="text-sm text-slate-500 hover:text-slate-700">
+        <Link href="/projects" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300">
           ← Back to Projects
         </Link>
       </div>
 
       {/* Header */}
-      <div className="rounded-lg border bg-white p-6">
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="font-mono text-xs text-slate-400">{project.projectNumber}</p>
-            <h1 className="mt-1 text-xl font-bold text-slate-900">
+            <h1 className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">
               {TYPE_LABELS[project.projectType]}
             </h1>
           </div>
           <span
-            className={`inline-flex shrink-0 items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[project.projectStatus] ?? "bg-slate-100 text-slate-700"}`}
+            className={`inline-flex shrink-0 items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[project.projectStatus] ?? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"}`}
           >
             {STATUS_LABELS[project.projectStatus] ?? project.projectStatus}
           </span>
@@ -161,11 +161,11 @@ export default async function ProjectDetailPage({
 
       {/* Change Requests Link — only shown when DELIVERED or SUPPORT */}
       {(project.projectStatus === ProjectStatus.DELIVERED || project.projectStatus === ProjectStatus.SUPPORT) && (
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-semibold text-slate-900">Change Requests</h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Change Requests</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Submit and manage post-delivery change requests for this project.
               </p>
             </div>
@@ -181,13 +181,13 @@ export default async function ProjectDetailPage({
 
       {/* Kickoff Actions — shown after acceptance */}
       {hasKickoff && (
-        <div className="rounded-lg border bg-white p-6">
+        <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-semibold text-slate-900">Project Kickoff</h2>
-              <p className="mt-1 text-sm text-slate-500">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Project Kickoff</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Status:{" "}
-                <span className="font-medium capitalize text-slate-700">
+                <span className="font-medium capitalize text-slate-700 dark:text-slate-300">
                   {project.kickoff!.status.replace(/_/g, " ")}
                 </span>
               </p>
@@ -201,7 +201,7 @@ export default async function ProjectDetailPage({
               </Link>
             )}
             {project.kickoff!.status === "SUBMITTED" && (
-              <span className="text-sm text-slate-500 italic">Awaiting Cortex review…</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400 italic">Awaiting Cortex review…</span>
             )}
             {project.kickoff!.status === "APPROVED" && (
               <span className="text-sm font-medium text-green-700">✓ Kickoff Approved</span>
@@ -211,38 +211,38 @@ export default async function ProjectDetailPage({
       )}
 
       {/* Project Details */}
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">Project Details</h2>
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+        <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Project Details</h2>
         <dl className="grid grid-cols-1 gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Project Type</dt>
-            <dd className="mt-1 text-slate-900">{TYPE_LABELS[project.projectType]}</dd>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Project Type</dt>
+            <dd className="mt-1 text-slate-900 dark:text-slate-100">{TYPE_LABELS[project.projectType]}</dd>
           </div>
           {project.budget && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Budget</dt>
-              <dd className="mt-1 text-slate-900">{project.budget}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Budget</dt>
+              <dd className="mt-1 text-slate-900 dark:text-slate-100">{project.budget}</dd>
             </div>
           )}
           {project.timeline && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Desired Timeline</dt>
-              <dd className="mt-1 text-slate-900">{project.timeline}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Desired Timeline</dt>
+              <dd className="mt-1 text-slate-900 dark:text-slate-100">{project.timeline}</dd>
             </div>
           )}
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Submitted</dt>
-            <dd className="mt-1 text-slate-900">
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Submitted</dt>
+            <dd className="mt-1 text-slate-900 dark:text-slate-100">
               {new Date(project.createdAt).toLocaleDateString("en-GB", { dateStyle: "long" })}
             </dd>
           </div>
           <div className="sm:col-span-2">
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Description</dt>
-            <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.description}</dd>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Description</dt>
+            <dd className="mt-1 whitespace-pre-wrap text-slate-900 dark:text-slate-100">{project.description}</dd>
           </div>
           <div className="sm:col-span-2">
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Requested Features</dt>
-            <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.features}</dd>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Requested Features</dt>
+            <dd className="mt-1 whitespace-pre-wrap text-slate-900 dark:text-slate-100">{project.features}</dd>
           </div>
         </dl>
       </div>
@@ -269,7 +269,7 @@ export default async function ProjectDetailPage({
             {project.scope && (
               <div className="sm:col-span-2">
                 <dt className="text-xs font-medium uppercase tracking-widest text-indigo-600">Scope</dt>
-                <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.scope}</dd>
+                <dd className="mt-1 whitespace-pre-wrap text-slate-900 dark:text-slate-100">{project.scope}</dd>
               </div>
             )}
           </dl>

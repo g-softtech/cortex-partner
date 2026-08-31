@@ -21,21 +21,21 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Profile</h1>
-        <p className="mt-1 text-sm text-slate-500">Your partner account details.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Profile</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Your partner account details.</p>
       </div>
 
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="mb-5 text-base font-semibold text-slate-900">Account Information</h2>
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+        <h2 className="mb-5 text-base font-semibold text-slate-900 dark:text-slate-100">Account Information</h2>
         <dl className="grid grid-cols-1 gap-x-8 gap-y-5 text-sm sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
               Partner ID
             </dt>
-            <dd className="mt-1 font-mono font-bold text-slate-900">{partner.partnerId}</dd>
+            <dd className="mt-1 font-mono font-bold text-slate-900 dark:text-slate-100">{partner.partnerId}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
               Status
             </dt>
             <dd className="mt-1">
@@ -53,37 +53,37 @@ export default async function ProfilePage() {
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
               Full Name
             </dt>
-            <dd className="mt-1 text-slate-900">{session.user.name ?? "—"}</dd>
+            <dd className="mt-1 text-slate-900 dark:text-slate-100">{session.user.name ?? "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
               Email Address
             </dt>
-            <dd className="mt-1 text-slate-900">{session.user.email}</dd>
+            <dd className="mt-1 text-slate-900 dark:text-slate-100">{session.user.email}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
               Partner Since
             </dt>
-            <dd className="mt-1 text-slate-900">
+            <dd className="mt-1 text-slate-900 dark:text-slate-100">
               {new Date(partner.joinedAt).toLocaleDateString("en-GB", { dateStyle: "long" })}
             </dd>
           </div>
           {application && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 Application Number
               </dt>
-              <dd className="mt-1 font-mono text-slate-900">{application.applicationNumber}</dd>
+              <dd className="mt-1 font-mono text-slate-900 dark:text-slate-100">{application.applicationNumber}</dd>
             </div>
           )}
         </dl>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+      <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-4 text-sm text-slate-500 dark:text-slate-400">
         To update your account details, please contact Cortex support.
       </div>
     </div>

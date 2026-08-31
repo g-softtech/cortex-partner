@@ -48,13 +48,13 @@ export default function NewSupportRequestPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">New Support Request</h1>
-        <p className="mt-2 text-sm text-slate-500">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">New Support Request</h1>
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
           Describe the issue you are facing and our team will get back to you shortly.
         </p>
       </div>
 
-      <div className="bg-white shadow-sm ring-1 ring-slate-200 sm:rounded-xl p-6 sm:p-8">
+      <div className="bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 sm:rounded-xl p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
             <div className="rounded-md bg-red-50 p-4 border border-red-200">
@@ -65,7 +65,7 @@ export default function NewSupportRequestPage() {
           )}
 
           <div>
-            <label htmlFor="category" className="block text-sm font-medium leading-6 text-slate-900">
+            <label htmlFor="category" className="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-100">
               Category
             </label>
             <div className="mt-2">
@@ -73,7 +73,7 @@ export default function NewSupportRequestPage() {
                 id="category"
                 name="category"
                 required
-                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:max-w-xs sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-1.5 text-slate-900 dark:text-slate-100 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:max-w-xs sm:text-sm sm:leading-6"
               >
                 <option value="">Select a category...</option>
                 {Object.values(SupportCategory).map((cat) => (
@@ -86,7 +86,7 @@ export default function NewSupportRequestPage() {
           </div>
 
           <div>
-            <label htmlFor="subject" className="block text-sm font-medium leading-6 text-slate-900">
+            <label htmlFor="subject" className="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-100">
               Subject
             </label>
             <div className="mt-2">
@@ -97,14 +97,14 @@ export default function NewSupportRequestPage() {
                 required
                 minLength={5}
                 maxLength={255}
-                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-1.5 text-slate-900 dark:text-slate-100 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:text-sm sm:leading-6"
                 placeholder="Brief description of the issue"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium leading-6 text-slate-900">
+            <label htmlFor="description" className="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-100">
               Description
             </label>
             <div className="mt-2">
@@ -114,7 +114,7 @@ export default function NewSupportRequestPage() {
                 rows={6}
                 required
                 minLength={10}
-                className="block w-full rounded-md border-0 py-1.5 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:text-sm sm:leading-6"
+                className="block w-full rounded-md border-0 py-1.5 text-slate-900 dark:text-slate-100 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 dark:placeholder:text-slate-500 dark:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:text-sm sm:leading-6"
                 placeholder="Please provide as much detail as possible..."
               />
             </div>
@@ -124,7 +124,7 @@ export default function NewSupportRequestPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="text-sm font-semibold leading-6 text-slate-900"
+              className="text-sm font-semibold leading-6 text-slate-900 dark:text-slate-100"
             >
               Cancel
             </button>

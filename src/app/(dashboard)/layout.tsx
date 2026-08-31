@@ -87,19 +87,19 @@ export default async function DashboardLayout({
           <NotificationDropdown />
           {/* Simple Mobile Navigation Links for now */}
           <nav className="flex items-center gap-4 text-sm font-medium">
-            <Link href="/dashboard" className="text-slate-600 hover:text-slate-900">
+            <Link href="/dashboard" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100">
               Home
             </Link>
-            <Link href="/projects" className="text-slate-600 hover:text-slate-900">
+            <Link href="/projects" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100">
               Projects
             </Link>
-            <Link href="/support" className="text-slate-600 hover:text-slate-900">
+            <Link href="/support" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100">
               Support
             </Link>
-            <Link href="/resources" className="text-slate-600 hover:text-slate-900">
+            <Link href="/resources" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100">
               Resources
             </Link>
-            <Link href="/profile" className="text-slate-600 hover:text-slate-900">
+            <Link href="/profile" className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100">
               Profile
             </Link>
           </nav>

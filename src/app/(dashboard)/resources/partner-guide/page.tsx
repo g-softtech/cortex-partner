@@ -4,19 +4,19 @@ import { ArrowLeft } from "lucide-react";
 export default function PartnerGuidePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <Link href="/resources" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-900">
+      <Link href="/resources" className="inline-flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back to Resources
       </Link>
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Partner Guide</h1>
-        <p className="mt-2 text-base text-slate-500">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Partner Guide</h1>
+        <p className="mt-2 text-base text-slate-500 dark:text-slate-400">
           Everything you need to know about the Cortex Partner Program.
         </p>
       </div>
 
-      <div className="prose prose-slate max-w-none bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+      <div className="prose prose-slate max-w-none bg-white dark:bg-slate-800 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
         <h2>Welcome to Cortex</h2>
         <p>
           As a Cortex Partner, you have access to a suite of enterprise-grade tools designed to help you deliver exceptional value to your clients while maximizing your own recurring revenue.

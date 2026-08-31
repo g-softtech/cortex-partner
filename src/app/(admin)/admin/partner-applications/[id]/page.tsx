@@ -40,17 +40,17 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link href="/admin/partner-applications" className="hover:text-slate-900 transition-colors">
+      <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+        <Link href="/admin/partner-applications" className="hover:text-slate-900 dark:text-slate-100 transition-colors">
           Applications
         </Link>
         <span>/</span>
-        <span className="font-mono text-slate-700">{application.applicationNumber}</span>
+        <span className="font-mono text-slate-700 dark:text-slate-300">{application.applicationNumber}</span>
       </div>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">{application.name}</h1>
-        <span className="font-mono text-sm text-slate-500">{application.applicationNumber}</span>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{application.name}</h1>
+        <span className="font-mono text-sm text-slate-500 dark:text-slate-400">{application.applicationNumber}</span>
       </div>
 
       <ApplicationDetailClient

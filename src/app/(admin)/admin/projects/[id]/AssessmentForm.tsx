@@ -106,7 +106,7 @@ export function AssessmentForm({
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="partnerPrice" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="partnerPrice" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Partner Price (£)
           </label>
           <p className="mb-1 text-xs text-slate-400">Enter as a decimal string, e.g. 1500.00</p>
@@ -115,7 +115,7 @@ export function AssessmentForm({
             type="text"
             inputMode="decimal"
             {...register("partnerPrice")}
-            className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
             placeholder="e.g. 1500.00"
             disabled={isSubmitting}
           />
@@ -125,14 +125,14 @@ export function AssessmentForm({
         </div>
 
         <div>
-          <label htmlFor="estimatedTimeline" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="estimatedTimeline" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Estimated Timeline
           </label>
           <input
             id="estimatedTimeline"
             type="text"
             {...register("estimatedTimeline")}
-            className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
             placeholder="e.g. 6–8 weeks"
             disabled={isSubmitting}
           />
@@ -140,21 +140,21 @@ export function AssessmentForm({
       </div>
 
       <div>
-        <label htmlFor="scope" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="scope" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Scope
         </label>
         <textarea
           id="scope"
           rows={4}
           {...register("scope")}
-          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+          className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
           placeholder="Describe the agreed scope of work..."
           disabled={isSubmitting}
         />
       </div>
 
       <div>
-        <label htmlFor="adminNotes" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="adminNotes" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Admin Notes{" "}
           <span className="text-xs font-normal text-slate-400">(Internal — never shown to partner)</span>
         </label>
@@ -162,7 +162,7 @@ export function AssessmentForm({
           id="adminNotes"
           rows={3}
           {...register("adminNotes")}
-          className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+          className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
           placeholder="Internal notes for the Cortex team..."
           disabled={isSubmitting}
         />
@@ -170,13 +170,13 @@ export function AssessmentForm({
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="opportunityStatus" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="opportunityStatus" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Opportunity
           </label>
           <select
             id="opportunityStatus"
             {...register("opportunityStatus")}
-            className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
             disabled={isSubmitting}
           >
             {OPPORTUNITY_OPTIONS.map((opt) => (
@@ -188,14 +188,14 @@ export function AssessmentForm({
         </div>
 
         <div>
-          <label htmlFor="newStatus" className="block text-sm font-medium text-slate-700">
+          <label htmlFor="newStatus" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
             Transition Status
           </label>
           <p className="mb-1 text-xs text-slate-400">Current: {currentStatus.replace(/_/g, " ")}</p>
           <select
             id="newStatus"
             {...register("newStatus")}
-            className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
             disabled={isSubmitting || allowedTransitions.length === 0}
           >
             <option value="">— No change —</option>

@@ -49,7 +49,7 @@ const STATUS_COLORS: Partial<Record<ProjectStatus, string>> = {
 const OPPORTUNITY_COLORS: Record<OpportunityStatus, string> = {
   HIGH:    "bg-green-100 text-green-800",
   MEDIUM:  "bg-yellow-100 text-yellow-800",
-  LOW:     "bg-slate-100 text-slate-600",
+  LOW:     "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
   UNKNOWN: "bg-gray-100 text-gray-500",
 };
 
@@ -143,7 +143,7 @@ export default async function AdminProjectDetailPage({
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div>
-        <Link href="/admin/projects" className="text-sm text-slate-500 hover:text-slate-700">
+        <Link href="/admin/projects" className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300">
           ← Back to Projects
         </Link>
       </div>
@@ -152,10 +152,10 @@ export default async function AdminProjectDetailPage({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="font-mono text-xs text-slate-400">{project.projectNumber}</p>
-          <h1 className="mt-1 text-xl font-bold text-slate-900">
+          <h1 className="mt-1 text-xl font-bold text-slate-900 dark:text-slate-100">
             {project.projectType.replace(/_/g, " ")}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Submitted{" "}
             {new Date(project.createdAt).toLocaleDateString("en-GB", { dateStyle: "long" })}
           </p>
@@ -163,7 +163,7 @@ export default async function AdminProjectDetailPage({
         <div className="flex flex-wrap gap-2">
           <span
             className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
-              STATUS_COLORS[project.projectStatus] ?? "bg-slate-100 text-slate-700"
+              STATUS_COLORS[project.projectStatus] ?? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
             }`}
           >
             {project.projectStatus.replace(/_/g, " ")}
@@ -180,44 +180,44 @@ export default async function AdminProjectDetailPage({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Partner Info */}
-        <div className="rounded-lg border bg-white p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">Partner</h2>
+        <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Partner</h2>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Partner ID</dt>
-              <dd className="mt-1 font-mono font-semibold text-slate-900">{project.partner.partnerId}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Partner ID</dt>
+              <dd className="mt-1 font-mono font-semibold text-slate-900 dark:text-slate-100">{project.partner.partnerId}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Name</dt>
-              <dd className="mt-1 text-slate-900">{project.partner.user.name ?? "—"}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Name</dt>
+              <dd className="mt-1 text-slate-900 dark:text-slate-100">{project.partner.user.name ?? "—"}</dd>
             </div>
             <div className="col-span-2">
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Email</dt>
-              <dd className="mt-1 text-slate-900">{project.partner.user.email}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Email</dt>
+              <dd className="mt-1 text-slate-900 dark:text-slate-100">{project.partner.user.email}</dd>
             </div>
           </dl>
         </div>
 
         {/* Financial Assessment */}
-        <div className="rounded-lg border bg-white p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">Assessment</h2>
+        <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Assessment</h2>
           <dl className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Partner Price</dt>
-              <dd className="mt-1 font-mono font-bold text-slate-900">
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Partner Price</dt>
+              <dd className="mt-1 font-mono font-bold text-slate-900 dark:text-slate-100">
                 {project.partnerPrice !== null
                   ? `£${project.partnerPrice.toFixed(2)}`
                   : <span className="font-normal text-slate-400">Not set</span>}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Est. Timeline</dt>
-              <dd className="mt-1 text-slate-900">{project.estimatedTimeline ?? <span className="text-slate-400">Not set</span>}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Est. Timeline</dt>
+              <dd className="mt-1 text-slate-900 dark:text-slate-100">{project.estimatedTimeline ?? <span className="text-slate-400">Not set</span>}</dd>
             </div>
             {project.scope && (
               <div className="col-span-2">
-                <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Scope</dt>
-                <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.scope}</dd>
+                <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Scope</dt>
+                <dd className="mt-1 whitespace-pre-wrap text-slate-900 dark:text-slate-100">{project.scope}</dd>
               </div>
             )}
             {project.adminNotes && (
@@ -225,7 +225,7 @@ export default async function AdminProjectDetailPage({
                 <dt className="text-xs font-medium uppercase tracking-widest text-red-500">
                   Admin Notes (Internal)
                 </dt>
-                <dd className="mt-1 whitespace-pre-wrap text-slate-700">{project.adminNotes}</dd>
+                <dd className="mt-1 whitespace-pre-wrap text-slate-700 dark:text-slate-300">{project.adminNotes}</dd>
               </div>
             )}
           </dl>
@@ -233,36 +233,36 @@ export default async function AdminProjectDetailPage({
       </div>
 
       {/* Partner Submission Details */}
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">Project Submission</h2>
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+        <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Project Submission</h2>
         <dl className="grid grid-cols-1 gap-5 text-sm sm:grid-cols-2">
           {project.budget && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Budget</dt>
-              <dd className="mt-1 text-slate-900">{project.budget}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Budget</dt>
+              <dd className="mt-1 text-slate-900 dark:text-slate-100">{project.budget}</dd>
             </div>
           )}
           {project.timeline && (
             <div>
-              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Desired Timeline</dt>
-              <dd className="mt-1 text-slate-900">{project.timeline}</dd>
+              <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Desired Timeline</dt>
+              <dd className="mt-1 text-slate-900 dark:text-slate-100">{project.timeline}</dd>
             </div>
           )}
           <div className="sm:col-span-2">
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Description</dt>
-            <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.description}</dd>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Description</dt>
+            <dd className="mt-1 whitespace-pre-wrap text-slate-900 dark:text-slate-100">{project.description}</dd>
           </div>
           <div className="sm:col-span-2">
-            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500">Features</dt>
-            <dd className="mt-1 whitespace-pre-wrap text-slate-900">{project.features}</dd>
+            <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">Features</dt>
+            <dd className="mt-1 whitespace-pre-wrap text-slate-900 dark:text-slate-100">{project.features}</dd>
           </div>
         </dl>
       </div>
 
       {/* Assessment Panel */}
-      <div className="rounded-lg border bg-white p-6">
-        <h2 className="mb-1 text-base font-semibold text-slate-900">Update Assessment</h2>
-        <p className="mb-5 text-sm text-slate-500">
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+        <h2 className="mb-1 text-base font-semibold text-slate-900 dark:text-slate-100">Update Assessment</h2>
+        <p className="mb-5 text-sm text-slate-500 dark:text-slate-400">
           Fields left blank will not overwrite existing values.
         </p>
         <AssessmentForm

@@ -52,7 +52,7 @@ export default function ForgotPasswordForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1">
-        <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
           Email Address
         </label>
         <input
@@ -65,7 +65,7 @@ export default function ForgotPasswordForm() {
             required: "Email is required.",
             pattern: { value: /^\S+@\S+\.\S+$/, message: "Enter a valid email address." },
           })}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 disabled:opacity-50"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900 border-slate-300 dark:border-slate-700 disabled:opacity-50"
         />
         {errors.email && (
           <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -80,9 +80,9 @@ export default function ForgotPasswordForm() {
         {isLoading ? "Sending..." : "Send Reset Link"}
       </button>
 
-      <p className="text-center text-sm text-slate-500">
+      <p className="text-center text-sm text-slate-500 dark:text-slate-400">
         Remembered it?{" "}
-        <Link href="/login" className="font-medium text-slate-900 hover:underline">
+        <Link href="/login" className="font-medium text-slate-900 dark:text-slate-100 hover:underline">
           Back to Login
         </Link>
       </p>

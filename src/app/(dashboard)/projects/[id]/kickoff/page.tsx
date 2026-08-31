@@ -97,18 +97,18 @@ export default async function KickoffPage({
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div>
-        <Link href={`/projects/${project.id}`} className="text-sm text-slate-500 hover:text-slate-700">
+        <Link href={`/projects/${project.id}`} className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300">
           ← Back to {project.projectNumber}
         </Link>
       </div>
 
       <div>
-        <h1 className="text-xl font-bold text-slate-900">{pageTitle}</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{pageTitle}</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Project: <span className="font-mono">{project.projectNumber}</span>
           {" · "}
           Status:{" "}
-          <span className="font-medium capitalize text-slate-700">
+          <span className="font-medium capitalize text-slate-700 dark:text-slate-300">
             {status.replace(/_/g, " ")}
           </span>
         </p>
