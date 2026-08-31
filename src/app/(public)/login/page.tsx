@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import LoginForm from "./LoginForm";
 
 export const metadata = {
@@ -14,9 +15,11 @@ export default function LoginPage() {
         <p className="text-sm text-slate-500 dark:text-slate-400 mb-8">
           Sign in to access your partner dashboard
         </p>
-        
-        <LoginForm />
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
 }
+

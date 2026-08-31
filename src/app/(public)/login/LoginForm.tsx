@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -14,6 +14,7 @@ type LoginValues = {
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +40,11 @@ export default function LoginForm() {
         setError("Invalid email or password.");
       } else {
         const session = await getSession();
-        if (session?.user?.role === "ADMIN") {
+        // Honour the callbackUrl if present (e.g. admin clicked an email link while logged out)
+        const callbackUrl = searchParams.get("callbackUrl");
+        if (callbackUrl) {
+          router.push(callbackUrl);
+        } else if (session?.user?.role === "ADMIN") {
           router.push("/admin/partner-applications");
         } else {
           router.push("/dashboard");
@@ -52,6 +57,7 @@ export default function LoginForm() {
       setIsLoading(false);
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
