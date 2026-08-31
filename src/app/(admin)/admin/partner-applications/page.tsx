@@ -87,7 +87,7 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
       </div>
 
       {/* Applications Table */}
-      <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border shadow-sm overflow-x-auto">
         {applications.length === 0 ? (
           <div className="p-12 text-center text-slate-500">
             No applications found{statusFilter ? ` with status "${STATUS_LABELS[statusFilter]}"` : ""}.

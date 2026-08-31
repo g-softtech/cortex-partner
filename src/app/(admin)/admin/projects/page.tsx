@@ -67,7 +67,7 @@ export default async function AdminProjectsPage() {
           <p className="text-sm text-slate-500">No projects submitted yet.</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border bg-white">
+        <div className="overflow-x-auto rounded-lg border bg-white">
           <table className="min-w-full divide-y divide-slate-200 text-sm">
             <thead className="bg-slate-50">
               <tr>
