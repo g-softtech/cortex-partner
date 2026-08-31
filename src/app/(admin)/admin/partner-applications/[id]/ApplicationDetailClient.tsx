@@ -40,11 +40,13 @@ export default function ApplicationDetailClient({ application }: { application: 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [infoMessage, setInfoMessage] = useState("");
 
   const ACTIONABLE_STATUSES: ApplicationStatus[] = [ApplicationStatus.PENDING, ApplicationStatus.MORE_INFORMATION];
   const canTransition = ACTIONABLE_STATUSES.includes(application.status);
 
-  const handleAction = async (newStatus: ApplicationStatus) => {
+  const handleAction = async (newStatus: ApplicationStatus, message?: string) => {
     if (loading) return;
     setError(null);
     setSuccess(null);
@@ -54,7 +56,7 @@ export default function ApplicationDetailClient({ application }: { application: 
       const res = await fetch(`/api/admin/partner-applications/${application.id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, ...(message && { message }) }),
       });
 
       const data = await res.json();
@@ -74,6 +76,8 @@ export default function ApplicationDetailClient({ application }: { application: 
       }
 
       // Refresh the page data
+      setShowModal(false);
+      setInfoMessage("");
       router.refresh();
     } catch {
       setError("A network error occurred. Please try again.");
@@ -127,11 +131,11 @@ export default function ApplicationDetailClient({ application }: { application: 
             {application.status === ApplicationStatus.PENDING && (
               <button
                 id="btn-more-info"
-                onClick={() => handleAction(ApplicationStatus.MORE_INFORMATION)}
+                onClick={() => setShowModal(true)}
                 disabled={loading}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Processing..." : "Request More Info"}
+                Request More Info
               </button>
             )}
             <button
@@ -151,6 +155,42 @@ export default function ApplicationDetailClient({ application }: { application: 
           </p>
         )}
       </div>
+
+      {/* More Info Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-opacity">
+          <div className="bg-card w-full max-w-md rounded-lg shadow-xl border border-border p-6 relative animate-in fade-in zoom-in-95 duration-200">
+            <h3 className="text-lg font-bold text-foreground mb-2">Request More Information</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Enter the message you want to send to the applicant. This will be included in the email notification they receive.
+            </p>
+            <textarea
+              className="w-full h-32 p-3 text-sm border border-border rounded-md bg-background text-foreground focus:ring-1 focus:ring-blue-500 focus:outline-none mb-4 resize-none"
+              placeholder="e.g., Please clarify your occupation and the type of clients you serve."
+              value={infoMessage}
+              onChange={(e) => setInfoMessage(e.target.value)}
+              disabled={loading}
+              maxLength={2000}
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowModal(false)}
+                disabled={loading}
+                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted border border-border rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleAction(ApplicationStatus.MORE_INFORMATION, infoMessage)}
+                disabled={loading || !infoMessage.trim()}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
+              >
+                {loading ? "Sending..." : "Send Request"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Application Details */}
       <div className="bg-card border-border border rounded-lg p-6">

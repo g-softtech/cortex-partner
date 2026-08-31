@@ -40,6 +40,7 @@ const patchSchema = z.object({
     ApplicationStatus.DECLINED,
     ApplicationStatus.MORE_INFORMATION,
   ]),
+  message: z.string().max(2000).optional(),
 });
 
 // Valid state machine transitions
@@ -89,7 +90,7 @@ export async function PATCH(
     );
   }
 
-  const { status: newStatus } = parsed.data;
+  const { status: newStatus, message: customMessageRaw } = parsed.data;
 
   // 3. Load current application
   const application = await db.partnerApplication.findUnique({
@@ -130,6 +131,22 @@ export async function PATCH(
     },
   });
 
+  const escapeHtml = (unsafe: string) => {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+  };
+
+  const customMessageHtml = newStatus === ApplicationStatus.MORE_INFORMATION && customMessageRaw
+    ? `<div style="background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 16px; margin: 20px 0; border-radius: 4px;">
+         <p style="margin: 0; color: #334155; font-size: 15px;"><strong>Message from Cortex Admin:</strong></p>
+         <p style="margin: 8px 0 0 0; color: #475569; white-space: pre-wrap;">${escapeHtml(customMessageRaw)}</p>
+       </div>`
+    : "";
+
   const dispatchEmail = await notifyUser({
     tx: db, // we are not in a transaction here, but notifyUser accepts PrismaClient
     userId: "SYSTEM_NO_USER", // We don't have a user ID for declined applicants
@@ -139,7 +156,7 @@ export async function PATCH(
     email: {
       to: application.email,
       subject: "Cortex Partner Program - Application Status",
-      html: `<p>Hi ${application.name},</p><p>Your application status has been updated to <strong>${newStatus.replace(/_/g, " ")}</strong>.</p>`,
+      html: `<p>Hi ${application.name},</p><p>Your application status has been updated to <strong>${newStatus.replace(/_/g, " ")}</strong>.</p>${customMessageHtml}`,
     }
   }, true); // skip in-app notification since they aren't a user
 
