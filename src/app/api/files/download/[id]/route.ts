@@ -33,10 +33,14 @@ export async function GET(
   }
 
   // 2. Load the file record
-  const file = await db.projectFile.findUnique({
+  let fileType = null;
+  let originalName = null;
+  let storageReference = null;
+  let projectPartnerId = null;
+
+  const projectFile = await db.projectFile.findUnique({
     where: { id: params.id },
     select: {
-      id: true,
       storageReference: true,
       originalName: true,
       fileType: true,
@@ -44,18 +48,43 @@ export async function GET(
     },
   });
 
-  if (!file) {
+  if (projectFile) {
+    fileType = projectFile.fileType;
+    originalName = projectFile.originalName;
+    storageReference = projectFile.storageReference;
+    projectPartnerId = projectFile.project.partnerId;
+  } else {
+    // Check ChangeRequestFile
+    const crFile = await db.changeRequestFile.findUnique({
+      where: { id: params.id },
+      select: {
+        storageReference: true,
+        originalName: true,
+        fileType: true,
+        changeRequest: { select: { project: { select: { partnerId: true } } } },
+      },
+    });
+
+    if (crFile) {
+      fileType = crFile.fileType;
+      originalName = crFile.originalName;
+      storageReference = crFile.storageReference;
+      projectPartnerId = crFile.changeRequest.project.partnerId;
+    }
+  }
+
+  if (!storageReference || !originalName) {
     return NextResponse.json({ error: "File not found." }, { status: 404 });
   }
 
   // 3. IDOR check
-  if (!isAdmin && ownerId && file.project.partnerId !== ownerId) {
+  if (!isAdmin && ownerId && projectPartnerId !== ownerId) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
 
   // 4. Proxy the file download
   try {
-    const blobResponse = await fetchBlobForProxy(file.storageReference);
+    const blobResponse = await fetchBlobForProxy(storageReference);
     
     if (!blobResponse.ok) {
       return NextResponse.json({ error: "Upstream file not found." }, { status: 404 });
@@ -63,8 +92,8 @@ export async function GET(
 
     // Stream the body to the client
     const headers = new Headers();
-    headers.set("Content-Type", file.fileType || blobResponse.headers.get("content-type") || "application/octet-stream");
-    headers.set("Content-Disposition", `inline; filename="${file.originalName}"`);
+    headers.set("Content-Type", fileType || blobResponse.headers.get("content-type") || "application/octet-stream");
+    headers.set("Content-Disposition", `inline; filename="${originalName}"`);
 
     return new NextResponse(blobResponse.body, {
       status: 200,
