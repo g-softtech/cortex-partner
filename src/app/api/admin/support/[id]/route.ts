@@ -23,7 +23,7 @@ export async function PATCH(
       );
     }
 
-    const { status } = result.data;
+    const { status, adminResponse, internalNote } = result.data;
 
     const currentTicket = await db.supportRequest.findUnique({
       where: { id },
@@ -44,7 +44,7 @@ export async function PATCH(
     const txResult = await db.$transaction(async (tx) => {
       const updated = await tx.supportRequest.update({
         where: { id },
-        data: { status },
+        data: { status, adminResponse, internalNote },
       });
 
       // Notify the partner of the status change
@@ -59,6 +59,7 @@ export async function PATCH(
           subject: `Support Request Updated: ${currentTicket.supportNumber}`,
           html: `<p>Hi ${currentTicket.partner.user.name},</p>
           <p>The status of your support request <strong>${currentTicket.supportNumber}</strong> has been updated to <strong>${status}</strong>.</p>
+          ${adminResponse ? `<p><strong>Cortex Response:</strong><br/>${adminResponse.replace(/\n/g, "<br/>")}</p>` : ""}
           <p>Please log in to your dashboard to view the latest details.</p>`,
         }
       });

@@ -9,40 +9,32 @@
 **Fix:** `vercel.json` added (commit `1737e68`) sets build command to `prisma migrate deploy && next build`. Migration should apply on next Vercel deploy.  
 **Verify:** Check Vercel build log — look for "All migrations have been applied successfully."
 
+## Resolved
+
 ### KI-004 — Agreement does not server-side gate project submission (2026-09-01)
-**Status:** Open — not yet implemented  
-**Symptom:** Partner without signed agreement can submit Project Opportunities via API.  
-**Root cause:** `POST /api/projects` (`src/app/api/projects/route.ts`) does not check `PartnerAgreementLog`. Only a UI warning banner exists — no server enforcement.  
-**Fix needed:** Add agreement check after `requirePartnerSession()` in `src/app/api/projects/route.ts`. Return 403 if not signed.
+**Status:** Resolved  
+**Description:** Partner without signed agreement could submit Project Opportunities via API.  
+**Resolution:** Added `db.partnerAgreementLog.findFirst` check inside `POST /api/projects`.
 
 ### KI-005 — Admin proposal not visible to Partner after assessment (2026-09-01)
-**Status:** Open — workflow clarification + minor UI fix needed  
-**Symptom:** Admin enters scope/price/timeline but Partner cannot see Cortex Proposal on project detail page.  
-**Root cause:** Proposal is gated by `PROPOSAL_SENT` status (`PROPOSAL_VISIBLE_STATUSES` array in `/projects/[id]/page.tsx`). Admin must explicitly transition status to `PROPOSAL_SENT` — this step is not obvious in the current `AssessmentForm`.  
-**Fix needed:** Relabel `PROPOSAL_SENT` option in AssessmentForm dropdown to "Send Proposal to Partner" to clarify intent.
+**Status:** Resolved  
+**Description:** Admin entered scope/price/timeline but Partner could not see Cortex Proposal on project detail page due to confusing workflow.  
+**Resolution:** Relabeled `PROPOSAL_SENT` option in AssessmentForm dropdown to "Send Proposal to Partner" to clarify intent.
 
 ### KI-006 — No Admin → Partner response mechanism in Support (2026-09-01)
-**Status:** Open — requires schema migration + UI  
-**Symptom:** Admin can change support ticket status but cannot send a visible response to Partner. Partner sees only their original description.  
-**Root cause:** `SupportRequest` model has no `adminResponse` or `internalNote` field. Admin and Partner UIs have no response thread.  
-**Fix needed:** Prisma migration to add `adminResponse TEXT?` and `internalNote TEXT?`. Update PATCH API and both UIs. `internalNote` must NEVER be exposed to partners.
+**Status:** Resolved  
+**Description:** Admin could change support ticket status but could not send a visible response to Partner.  
+**Resolution:** Added `adminResponse` and `internalNote` to `SupportRequest` schema. Created migration, updated `PATCH` API, updated Admin UI with textareas, and Partner UI to display `adminResponse`.
 
 ### KI-007 — Partner profile is read-only (2026-09-01)
-**Status:** Open — UX improvement  
-**Symptom:** `/profile` page shows read-only fields with note to "contact Cortex support to update details."  
-**Root cause:** No edit form or API endpoint for partner self-service profile updates.  
-**Fix needed:** Add name edit form + Change Password flow on `/profile`. `partnerId`, `status`, `joinedAt` remain immutable.
+**Status:** Resolved  
+**Description:** `/profile` page showed read-only fields.  
+**Resolution:** Added `ProfileEditForm` client component for inline name editing and a link to the `/forgot-password` flow.
 
 ### KI-008 — Notification dropdown overflows on mobile viewports (2026-09-01)
-**Status:** Open — CSS fix only  
-**Symptom:** Notifications cut off on 320px–430px viewports.  
-**Root cause:** `NotificationDropdown.tsx` uses fixed `w-80 sm:w-96` width positioned `right-0`. Text lacks `break-words`. Flex layout with "Mark read" button can overflow on narrow screens.  
-**File:** `src/components/ui/NotificationDropdown.tsx` line 93  
-**Fix needed:** Use `w-screen max-w-sm` instead of `w-80`, add `min-w-0 flex-1` and `break-words` to content.
-
----
-
-## Resolved
+**Status:** Resolved  
+**Description:** Notifications cut off on 320px–430px viewports.  
+**Resolution:** Made dropdown container responsive (`w-[calc(100vw-2rem)] max-w-sm sm:w-96`) and added `min-w-0 flex-1 break-words` to text content.
 
 ### KI-001 — DIRECT_URL using pooled connection string
 **Status:** Resolved  

@@ -201,7 +201,7 @@ export function AssessmentForm({
             <option value="">— No change —</option>
             {allowedTransitions.map((s) => (
               <option key={s} value={s}>
-                {s.replace(/_/g, " ")}
+                {s === "PROPOSAL_SENT" ? "Send Proposal to Partner" : s.replace(/_/g, " ")}
               </option>
             ))}
           </select>

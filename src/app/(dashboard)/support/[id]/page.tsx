@@ -12,6 +12,7 @@ interface SupportRequest {
   description: string;
   status: string;
   createdAt: string;
+  adminResponse?: string;
 }
 
 export default function PartnerSupportDetailPage() {
@@ -104,6 +105,14 @@ export default function PartnerSupportDetailPage() {
                 {request.description}
               </dd>
             </div>
+            {request.adminResponse && (
+              <div className="sm:col-span-2">
+                <dt className="text-sm font-medium text-slate-500 dark:text-slate-400">Cortex Response</dt>
+                <dd className="mt-1 text-sm text-slate-900 dark:text-slate-100 whitespace-pre-wrap rounded-md bg-indigo-50 dark:bg-indigo-900/20 p-4 ring-1 ring-inset ring-indigo-200 dark:ring-indigo-800">
+                  {request.adminResponse}
+                </dd>
+              </div>
+            )}
           </dl>
         </div>
       </div>

@@ -13,6 +13,8 @@ interface SupportRequest {
   description: string;
   status: string;
   createdAt: string;
+  adminResponse: string | null;
+  internalNote: string | null;
   partner: {
     user: {
       name: string;
@@ -28,6 +30,8 @@ export default function AdminSupportDetailPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [adminResponse, setAdminResponse] = useState<string>("");
+  const [internalNote, setInternalNote] = useState<string>("");
 
   useEffect(() => {
     const fetchRequest = async () => {
@@ -38,6 +42,8 @@ export default function AdminSupportDetailPage() {
           const req = data.find((r: SupportRequest) => r.id === id);
           if (req) {
             setRequest(req);
+            setAdminResponse(req.adminResponse || "");
+            setInternalNote(req.internalNote || "");
           } else {
             router.push("/admin/support");
           }
@@ -52,15 +58,17 @@ export default function AdminSupportDetailPage() {
     fetchRequest();
   }, [id, router]);
 
-  const handleStatusUpdate = async (newStatus: string) => {
+  const handleUpdate = async (newStatus?: string) => {
     setUpdating(true);
     setError(null);
+
+    const statusToUpdate = newStatus || request?.status;
 
     try {
       const res = await fetch(`/api/admin/support/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: statusToUpdate, adminResponse, internalNote }),
       });
 
       if (!res.ok) {
@@ -135,6 +143,51 @@ export default function AdminSupportDetailPage() {
               </dl>
             </div>
           </div>
+
+          <div className="overflow-hidden bg-white dark:bg-slate-800 shadow-sm ring-1 ring-slate-200 sm:rounded-xl">
+            <div className="border-b border-slate-200 dark:border-slate-700 px-4 py-5 sm:px-6">
+              <h3 className="text-base font-semibold leading-6 text-slate-900 dark:text-slate-100">
+                Cortex Response
+              </h3>
+            </div>
+            <div className="px-4 py-5 sm:p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Response to Partner
+                </label>
+                <textarea
+                  rows={4}
+                  value={adminResponse}
+                  onChange={(e) => setAdminResponse(e.target.value)}
+                  disabled={updating}
+                  className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 dark:bg-slate-800 dark:text-slate-100 sm:text-sm"
+                  placeholder="Enter response..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Internal Note <span className="text-xs text-red-500">(Never shown to partner)</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={internalNote}
+                  onChange={(e) => setInternalNote(e.target.value)}
+                  disabled={updating}
+                  className="mt-1 block w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 shadow-sm focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500 dark:bg-slate-800 dark:text-slate-100 sm:text-sm"
+                  placeholder="Internal team notes..."
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  onClick={() => handleUpdate()}
+                  disabled={updating}
+                  className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+                >
+                  Save Response
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Sidebar */}
@@ -146,7 +199,7 @@ export default function AdminSupportDetailPage() {
                 <div className="mt-2">
                   <select
                     value={request.status}
-                    onChange={(e) => handleStatusUpdate(e.target.value)}
+                    onChange={(e) => handleUpdate(e.target.value)}
                     disabled={updating}
                     className="block w-full rounded-md border-0 py-1.5 text-slate-900 dark:text-slate-100 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:text-sm sm:leading-6 disabled:opacity-50"
                   >

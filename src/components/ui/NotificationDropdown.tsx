@@ -90,7 +90,7 @@ export function NotificationDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
           <div className="flex items-center justify-between border-b px-4 py-3">
             <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
             {unreadCount > 0 && (
@@ -117,7 +117,7 @@ export function NotificationDropdown() {
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-medium text-slate-900">
+                      <p className="text-sm font-medium text-slate-900 min-w-0 flex-1 break-words">
                         {notification.title}
                       </p>
                       {!notification.read && (
@@ -129,7 +129,7 @@ export function NotificationDropdown() {
                         </button>
                       )}
                     </div>
-                    <p className="text-sm text-slate-600">{notification.message}</p>
+                    <p className="text-sm text-slate-600 break-words">{notification.message}</p>
                     <p className="text-xs text-slate-400">
                       {new Date(notification.createdAt).toLocaleDateString()} at{" "}
                       {new Date(notification.createdAt).toLocaleTimeString([], {

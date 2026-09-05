@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { requirePartnerSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { ProfileEditForm } from "./ProfileEditForm";
+import Link from "next/link";
 
 export const metadata = {
   title: "Profile | Cortex Partner Program",
@@ -56,7 +58,7 @@ export default async function ProfilePage() {
             <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
               Full Name
             </dt>
-            <dd className="mt-1 text-slate-900 dark:text-slate-100">{session.user.name ?? "—"}</dd>
+            <ProfileEditForm currentName={session.user.name ?? ""} />
           </div>
           <div>
             <dt className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
@@ -83,8 +85,26 @@ export default async function ProfilePage() {
         </dl>
       </div>
 
+      <div className="rounded-lg border bg-white dark:bg-slate-800 p-6">
+        <h2 className="mb-5 text-base font-semibold text-slate-900 dark:text-slate-100">Security</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Password</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              If you need to change your password, you can request a password reset email.
+            </p>
+          </div>
+          <Link
+            href="/forgot-password"
+            className="rounded-md bg-slate-100 dark:bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600 text-center"
+          >
+            Change Password
+          </Link>
+        </div>
+      </div>
+
       <div className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 p-4 text-sm text-slate-500 dark:text-slate-400">
-        To update your account details, please contact Cortex support.
+        To update other account details, please contact Cortex support.
       </div>
     </div>
   );

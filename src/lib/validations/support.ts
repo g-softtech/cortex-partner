@@ -17,6 +17,8 @@ export const adminSupportUpdateSchema = z.object({
   status: z.nativeEnum(SupportStatus, {
     required_error: "Status is required",
   }),
+  adminResponse: z.string().optional(),
+  internalNote: z.string().optional(),
 });
 
 export type AdminSupportUpdateInput = z.infer<typeof adminSupportUpdateSchema>;

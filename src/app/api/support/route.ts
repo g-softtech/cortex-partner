@@ -15,7 +15,14 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(supportRequests);
+    // Omit internalNote before returning to the partner
+    const sanitizedRequests = supportRequests.map((req) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { internalNote, ...rest } = req;
+      return rest;
+    });
+
+    return NextResponse.json(sanitizedRequests);
   } catch (error) {
     if (error instanceof Error && error.message.includes("Session")) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

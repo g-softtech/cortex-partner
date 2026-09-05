@@ -396,6 +396,10 @@ model SupportRequest {
   description   String   @db.Text
   status        SupportStatus @default(OPEN)
   
+  // Admin responses
+  adminResponse String?  @db.Text
+  internalNote  String?  @db.Text
+  
   partnerId     String 
   partner       Partner  @relation(fields: [partnerId], references: [id], onDelete: Restrict)
   

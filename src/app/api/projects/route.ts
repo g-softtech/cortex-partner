@@ -5,6 +5,7 @@ import { projectSubmissionSchema } from "@/lib/validations/project";
 import { requirePartnerSession } from "@/lib/auth/session";
 import { notifyAdmins } from "@/lib/notifications";
 import { NotificationType } from "@prisma/client";
+import { CURRENT_AGREEMENT_VERSION } from "@/lib/agreements/partner-agreement";
 
 export async function POST(req: Request) {
   try {
@@ -12,6 +13,21 @@ export async function POST(req: Request) {
     // requirePartnerSession explicitly checks the user role is PARTNER
     // and that a Partner record exists. It throws an error if unauthorized.
     const { partner } = await requirePartnerSession();
+
+    // 1.5. Agreement Gate (SECURITY)
+    // Enforce that the partner has accepted the current version of the Partner Agreement
+    // before allowing them to submit any project opportunities.
+    const agreement = await db.partnerAgreementLog.findFirst({
+      where: { partnerId: partner.id, version: CURRENT_AGREEMENT_VERSION },
+      select: { id: true },
+    });
+
+    if (!agreement) {
+      return NextResponse.json(
+        { error: "Partner Agreement must be accepted before submitting projects." },
+        { status: 403 }
+      );
+    }
 
     // 2. Rate Limiting
     const ip = req.headers.get("x-forwarded-for") ?? "127.0.0.1";
