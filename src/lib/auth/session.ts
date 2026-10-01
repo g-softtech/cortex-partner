@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/options";
-import { UserRole } from "@prisma/client";
+import { UserRole, PartnerStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 
 /**
@@ -15,12 +15,12 @@ export async function getSession() {
  * Requires a valid authenticated session with the ADMIN role.
  *
  * Authorization flow:
- *   1. No session → throws 401
- *   2. Session exists but role !== ADMIN → throws 403
- *   3. ADMIN session → returns session
+ *   1. No session -> throws 401
+ *   2. Session exists but role !== ADMIN -> throws 403
+ *   3. ADMIN session -> returns session
  *
  * Call this at the TOP of every admin API route and every admin server component.
- * Do not rely solely on middleware — the service layer enforces auth independently.
+ * Do not rely solely on middleware - the service layer enforces auth independently.
  *
  * @throws { status: 401 } if unauthenticated
  * @throws { status: 403 } if authenticated but not ADMIN
@@ -45,7 +45,7 @@ export async function requireAdminSession() {
 
 /**
  * Returns a NextResponse-compatible error for auth failures.
- * Inspect the error's .status property (401 or 403).
+ * Inspect the error status property (401 or 403).
  */
 export function isAuthError(err: unknown): err is Error & { status: 401 | 403 } {
   return err instanceof Error && ((err as Error & { status?: number }).status === 401 || (err as Error & { status?: number }).status === 403);
@@ -53,10 +53,11 @@ export function isAuthError(err: unknown): err is Error & { status: 401 | 403 } 
 
 /**
  * Requires a valid authenticated session with the PARTNER role.
- * Also verifies that a Partner record exists for this user in the database.
+ * Also verifies that an active Partner record exists for this user in the database.
  *
  * @throws { status: 401 } if unauthenticated
- * @throws { status: 403 } if authenticated but not PARTNER, or if Partner record is missing.
+ * @throws { status: 403 } if authenticated but not PARTNER, if Partner record is missing,
+ *                          or if Partner status is SUSPENDED or INACTIVE.
  */
 export async function requirePartnerSession() {
   const session = await getSession();
@@ -80,6 +81,12 @@ export async function requirePartnerSession() {
 
   if (!partner) {
     const err = new Error("Forbidden: No partner account found for this user.");
+    (err as Error & { status: number }).status = 403;
+    throw err;
+  }
+
+  if (partner.status === PartnerStatus.SUSPENDED || partner.status === PartnerStatus.INACTIVE) {
+    const err = new Error("Forbidden: Partner account is no longer active.");
     (err as Error & { status: number }).status = 403;
     throw err;
   }

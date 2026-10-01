@@ -17,3 +17,10 @@ export const partnerApplicationSchema = z.object({
 });
 
 export type PartnerApplicationInput = z.infer<typeof partnerApplicationSchema>;
+
+export const updatePartnerStatusSchema = z.object({
+  action: z.enum(["SUSPEND", "REACTIVATE", "REVOKE"]),
+  reason: z.string().max(1000).optional(),
+});
+
+export type UpdatePartnerStatusInput = z.infer<typeof updatePartnerStatusSchema>;

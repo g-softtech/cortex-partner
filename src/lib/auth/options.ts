@@ -1,6 +1,6 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { UserRole } from "@prisma/client";
+import { UserRole, PartnerStatus } from "@prisma/client";
 
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
@@ -8,13 +8,10 @@ import { db } from "@/lib/db";
 /**
  * Auth.js v4 configuration.
  *
- * PHASE 4 STATE: 
- * The credentials provider authenticates users using bcrypt to verify
+ * Credentials provider authenticates users using bcrypt to verify
  * passwords against the hashed password stored in the database.
  * 
- * The session JWT is extended to carry `id` and `role` so that
- * `requireAdminSession()` can enforce ADMIN-only access without
- * additional DB lookups on every request.
+ * For PARTNER roles, access is rejected at login time if partner.status !== ACTIVE.
  */
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -34,15 +31,26 @@ export const authOptions: NextAuthOptions = {
         });
 
         // Refuse authentication if the user does not exist or has no password set
-        // (Partners without a setup account will have password: null)
         if (!user || !user.password) {
-          return null; // Return null to securely obscure exact failure reason (invalid email vs bad password)
+          return null;
         }
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
 
         if (!isValid) {
           return null;
+        }
+
+        // If user is a partner, reject login if suspended or inactive
+        if (user.role === UserRole.PARTNER) {
+          const partner = await db.partner.findUnique({
+            where: { userId: user.id },
+            select: { status: true },
+          });
+
+          if (partner && partner.status !== PartnerStatus.ACTIVE) {
+            return null;
+          }
         }
 
         return {
@@ -59,7 +67,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      // Persist role and id into the JWT on sign-in
       if (user) {
         token.id = user.id;
         token.role = (user as import("next-auth").User).role ?? UserRole.PARTNER;
@@ -67,7 +74,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // Expose id and role on the session object
       if (session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
