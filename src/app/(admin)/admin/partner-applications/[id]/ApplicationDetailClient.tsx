@@ -35,9 +35,16 @@ const STATUS_COLORS: Record<ApplicationStatus, string> = {
   MORE_INFORMATION: "bg-blue-100 text-blue-800",
 };
 
-export default function ApplicationDetailClient({ application }: { application: Application }) {
+export default function ApplicationDetailClient({
+  application,
+  isActivated = false,
+}: {
+  application: Application;
+  isActivated?: boolean;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -46,8 +53,36 @@ export default function ApplicationDetailClient({ application }: { application: 
   const ACTIONABLE_STATUSES: ApplicationStatus[] = [ApplicationStatus.PENDING, ApplicationStatus.MORE_INFORMATION];
   const canTransition = ACTIONABLE_STATUSES.includes(application.status);
 
+  const handleResendActivation = async () => {
+    if (loading || resending) return;
+    setError(null);
+    setSuccess(null);
+    setResending(true);
+
+    try {
+      const res = await fetch(
+        `/api/admin/partner-applications/${application.id}/resend-activation`,
+        { method: "POST" }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Failed to resend activation link.");
+        return;
+      }
+
+      setSuccess("Activation link resent successfully via email.");
+      router.refresh();
+    } catch {
+      setError("A network error occurred. Please try again.");
+    } finally {
+      setResending(false);
+    }
+  };
+
   const handleAction = async (newStatus: ApplicationStatus, message?: string) => {
-    if (loading) return;
+    if (loading || resending) return;
     setError(null);
     setSuccess(null);
     setLoading(true);
@@ -122,7 +157,7 @@ export default function ApplicationDetailClient({ application }: { application: 
               <button
                 id="btn-approve"
                 onClick={() => handleAction(ApplicationStatus.APPROVED)}
-                disabled={loading}
+                disabled={loading || resending}
                 className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Processing..." : "Approve"}
@@ -132,7 +167,7 @@ export default function ApplicationDetailClient({ application }: { application: 
               <button
                 id="btn-more-info"
                 onClick={() => setShowModal(true)}
-                disabled={loading}
+                disabled={loading || resending}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Request More Info
@@ -141,7 +176,7 @@ export default function ApplicationDetailClient({ application }: { application: 
             <button
               id="btn-decline"
               onClick={() => handleAction(ApplicationStatus.DECLINED)}
-              disabled={loading}
+              disabled={loading || resending}
               className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Processing..." : "Decline"}
@@ -149,7 +184,27 @@ export default function ApplicationDetailClient({ application }: { application: 
           </div>
         )}
 
-        {!canTransition && (
+        {application.status === ApplicationStatus.APPROVED && (
+          <div className="pt-2">
+            {isActivated ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Account Activated
+              </span>
+            ) : (
+              <button
+                id="btn-resend-activation"
+                onClick={handleResendActivation}
+                disabled={loading || resending}
+                className="px-4 py-2 text-sm font-medium text-white bg-amber-600 rounded-md hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {resending ? "Resending Link..." : "Resend Activation Link"}
+              </button>
+            )}
+          </div>
+        )}
+
+        {!canTransition && application.status !== ApplicationStatus.APPROVED && (
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
             This application is in a terminal state and cannot be transitioned further.
           </p>
@@ -169,13 +224,13 @@ export default function ApplicationDetailClient({ application }: { application: 
               placeholder="e.g., Please clarify your occupation and the type of clients you serve."
               value={infoMessage}
               onChange={(e) => setInfoMessage(e.target.value)}
-              disabled={loading}
+              disabled={loading || resending}
               maxLength={2000}
             />
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowModal(false)}
-                disabled={loading}
+                disabled={loading || resending}
                 className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted border border-border rounded-md transition-colors"
               >
                 Cancel

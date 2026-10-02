@@ -28,6 +28,16 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
         select: {
           partnerId: true,
           status: true,
+          user: {
+            select: {
+              password: true,
+              setupTokens: {
+                select: {
+                  consumedAt: true,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -36,6 +46,11 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
   if (!application) {
     notFound();
   }
+
+  const isActivated = application.partner?.user
+    ? application.partner.user.password !== null ||
+      application.partner.user.setupTokens.some((t) => t.consumedAt !== null)
+    : false;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -59,6 +74,7 @@ export default async function ApplicationDetailPage({ params }: PageProps) {
           createdAt: application.createdAt.toISOString(),
           updatedAt: application.updatedAt.toISOString(),
         }}
+        isActivated={isActivated}
       />
     </div>
   );

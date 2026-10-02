@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { PartnerStatusModal } from "@/components/admin/PartnerStatusModal";
 
 export interface PartnerItem {
@@ -20,15 +21,30 @@ export interface PartnerItem {
   };
 }
 
-interface PartnerManagementTableProps {
-  initialPartners: PartnerItem[];
+export interface PaginationMeta {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  from: number;
+  to: number;
 }
 
-export function PartnerManagementTable({ initialPartners }: PartnerManagementTableProps) {
+interface PartnerManagementTableProps {
+  initialPartners: PartnerItem[];
+  pagination: PaginationMeta;
+}
+
+export function PartnerManagementTable({ initialPartners, pagination }: PartnerManagementTableProps) {
   const router = useRouter();
   const [partners, setPartners] = useState<PartnerItem[]>(initialPartners);
   const [selectedPartner, setSelectedPartner] = useState<PartnerItem | null>(null);
   const [modalAction, setModalAction] = useState<"SUSPEND" | "REACTIVATE" | "REVOKE" | null>(null);
+
+  // Sync state when props change (e.g. page navigation)
+  React.useEffect(() => {
+    setPartners(initialPartners);
+  }, [initialPartners]);
 
   const handleOpenModal = (partner: PartnerItem, action: "SUSPEND" | "REACTIVATE" | "REVOKE") => {
     setSelectedPartner(partner);
@@ -40,20 +56,13 @@ export function PartnerManagementTable({ initialPartners }: PartnerManagementTab
     setModalAction(null);
   };
 
-  const handleSuccess = async () => {
-    try {
-      const res = await fetch("/api/admin/partners");
-      if (res.ok) {
-        const data = await res.json();
-        if (data.partners) {
-          setPartners(data.partners);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to refresh partners list:", e);
-    }
+  const handleSuccess = () => {
+    handleCloseModal();
     router.refresh();
   };
+
+  const hasPrevious = pagination.page > 1;
+  const hasNext = pagination.totalPages > 0 && pagination.page < pagination.totalPages;
 
   return (
     <div>
@@ -161,6 +170,47 @@ export function PartnerManagementTable({ initialPartners }: PartnerManagementTab
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">
+        <div>
+          Showing <span className="font-medium text-foreground">{pagination.from}</span>–
+          <span className="font-medium text-foreground">{pagination.to}</span> of{" "}
+          <span className="font-medium text-foreground">{pagination.total}</span>
+        </div>
+
+        {pagination.totalPages > 1 && (
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/admin/partners?page=${pagination.page - 1}`}
+              className={`px-3 py-1.5 text-xs font-medium border border-border rounded-lg bg-card transition-colors ${
+                hasPrevious
+                  ? "hover:bg-accent/50 text-foreground"
+                  : "pointer-events-none opacity-40 text-muted-foreground"
+              }`}
+              aria-disabled={!hasPrevious}
+            >
+              ← Previous
+            </Link>
+
+            <span className="text-xs font-medium text-foreground">
+              Page {pagination.page} of {pagination.totalPages}
+            </span>
+
+            <Link
+              href={`/admin/partners?page=${pagination.page + 1}`}
+              className={`px-3 py-1.5 text-xs font-medium border border-border rounded-lg bg-card transition-colors ${
+                hasNext
+                  ? "hover:bg-accent/50 text-foreground"
+                  : "pointer-events-none opacity-40 text-muted-foreground"
+              }`}
+              aria-disabled={!hasNext}
+            >
+              Next →
+            </Link>
+          </div>
+        )}
       </div>
 
       <PartnerStatusModal

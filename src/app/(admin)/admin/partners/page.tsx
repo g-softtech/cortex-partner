@@ -4,11 +4,26 @@ import { PartnerManagementTable, PartnerItem } from "./PartnerManagementTable";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPartnersPage() {
+interface PageProps {
+  searchParams?: { page?: string };
+}
+
+export default async function AdminPartnersPage({ searchParams }: PageProps) {
   await requireAdminSession();
 
+  const PAGE_SIZE = 10;
+  const pageParam = parseInt(searchParams?.page ?? "1", 10);
+  const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+
+  const total = await db.partner.count();
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const safePage = totalPages > 0 && page > totalPages ? totalPages : page;
+  const skip = (safePage - 1) * PAGE_SIZE;
+
   const rawPartners = await db.partner.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    skip,
+    take: PAGE_SIZE,
     select: {
       id: true,
       partnerId: true,
@@ -46,6 +61,9 @@ export default async function AdminPartnersPage() {
     },
   }));
 
+  const from = total === 0 ? 0 : skip + 1;
+  const to = Math.min(skip + PAGE_SIZE, total);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -59,7 +77,17 @@ export default async function AdminPartnersPage() {
         </div>
       </div>
 
-      <PartnerManagementTable initialPartners={partners} />
+      <PartnerManagementTable
+        initialPartners={partners}
+        pagination={{
+          page: safePage,
+          pageSize: PAGE_SIZE,
+          total,
+          totalPages,
+          from,
+          to,
+        }}
+      />
     </div>
   );
 }

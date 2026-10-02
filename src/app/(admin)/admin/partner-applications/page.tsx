@@ -17,7 +17,7 @@ const STATUS_COLORS: Record<ApplicationStatus, string> = {
 };
 
 interface PageProps {
-  searchParams: { status?: string; page?: string };
+  searchParams?: { status?: string; page?: string };
 }
 
 export default async function PartnerApplicationsPage({ searchParams }: PageProps) {
@@ -25,7 +25,6 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
   const pageParam = parseInt(searchParams?.page ?? "1", 10);
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
   const PAGE_SIZE = 20;
-  const skip = (page - 1) * PAGE_SIZE;
 
   const validStatuses = Object.values(ApplicationStatus);
   const statusFilter =
@@ -33,32 +32,36 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
       ? (statusParam as ApplicationStatus)
       : undefined;
 
-  const [applications, total] = await Promise.all([
-    db.partnerApplication.findMany({
-      where: statusFilter ? { status: statusFilter } : undefined,
-      orderBy: { createdAt: "desc" },
-      skip,
-      take: PAGE_SIZE,
-      select: {
-        id: true,
-        applicationNumber: true,
-        name: true,
-        email: true,
-        occupation: true,
-        status: true,
-        createdAt: true,
-      },
-    }),
-    db.partnerApplication.count({
-      where: statusFilter ? { status: statusFilter } : undefined,
-    }),
-  ]);
+  const total = await db.partnerApplication.count({
+    where: statusFilter ? { status: statusFilter } : undefined,
+  });
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
+  const safePage = totalPages > 0 && page > totalPages ? totalPages : page;
+  const skip = (safePage - 1) * PAGE_SIZE;
+
+  const applications = await db.partnerApplication.findMany({
+    where: statusFilter ? { status: statusFilter } : undefined,
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    skip,
+    take: PAGE_SIZE,
+    select: {
+      id: true,
+      applicationNumber: true,
+      name: true,
+      email: true,
+      occupation: true,
+      status: true,
+      createdAt: true,
+    },
+  });
+
+  const from = total === 0 ? 0 : skip + 1;
+  const to = Math.min(skip + PAGE_SIZE, total);
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Partner Applications</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} total application{total !== 1 ? "s" : ""}</p>
@@ -66,7 +69,7 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
       </div>
 
       {/* Status Filter Tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
+      <div className="flex gap-2 flex-wrap">
         {[undefined, ...validStatuses].map((s) => {
           const label = s ? STATUS_LABELS[s] : "All";
           const isActive = statusFilter === s;
@@ -124,7 +127,7 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
                       year: "numeric",
                     })}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-right">
                     <Link
                       href={`/admin/partner-applications/${app.id}`}
                       className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-100 underline underline-offset-2 text-xs font-medium"
@@ -139,32 +142,46 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
         )}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Page {page} of {totalPages}
-          </p>
-          <div className="flex gap-2">
-            {page > 1 && (
-              <Link
-                href={`/admin/partner-applications?${statusFilter ? `status=${statusFilter}&` : ""}page=${page - 1}`}
-                className="px-3 py-1.5 text-sm border rounded-md bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900/50"
-              >
-                Previous
-              </Link>
-            )}
-            {page < totalPages && (
-              <Link
-                href={`/admin/partner-applications?${statusFilter ? `status=${statusFilter}&` : ""}page=${page + 1}`}
-                className="px-3 py-1.5 text-sm border rounded-md bg-white dark:bg-slate-800 hover:bg-slate-50 dark:bg-slate-900/50"
-              >
-                Next
-              </Link>
-            )}
-          </div>
+      {/* Pagination Footer */}
+      <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+        <div>
+          Showing <span className="font-medium text-slate-900 dark:text-slate-100">{from}</span>�
+          <span className="font-medium text-slate-900 dark:text-slate-100">{to}</span> of{" "}
+          <span className="font-medium text-slate-900 dark:text-slate-100">{total}</span>
         </div>
-      )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/admin/partner-applications?${statusFilter ? `status=${statusFilter}&` : ""}page=${safePage - 1}`}
+              className={`px-3 py-1.5 text-xs font-medium border rounded-md bg-white dark:bg-slate-800 transition-colors ${
+                safePage > 1
+                  ? "hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                  : "pointer-events-none opacity-40 text-slate-400"
+              }`}
+              aria-disabled={safePage <= 1}
+            >
+              ? Previous
+            </Link>
+
+            <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+              Page {safePage} of {totalPages}
+            </span>
+
+            <Link
+              href={`/admin/partner-applications?${statusFilter ? `status=${statusFilter}&` : ""}page=${safePage + 1}`}
+              className={`px-3 py-1.5 text-xs font-medium border rounded-md bg-white dark:bg-slate-800 transition-colors ${
+                safePage < totalPages
+                  ? "hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                  : "pointer-events-none opacity-40 text-slate-400"
+              }`}
+              aria-disabled={safePage >= totalPages}
+            >
+              Next ?
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
