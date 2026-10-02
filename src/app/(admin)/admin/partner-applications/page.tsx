@@ -145,8 +145,7 @@ export default async function PartnerApplicationsPage({ searchParams }: PageProp
       {/* Pagination Footer */}
       <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
         <div>
-          Showing <span className="font-medium text-slate-900 dark:text-slate-100">{from}</span>�
-          <span className="font-medium text-slate-900 dark:text-slate-100">{to}</span> of{" "}
+          Showing <span className="font-medium text-slate-900 dark:text-slate-100">{from}</span> - <span className="font-medium text-slate-900 dark:text-slate-100">{to}</span> of{" "}
           <span className="font-medium text-slate-900 dark:text-slate-100">{total}</span>
         </div>
 

@@ -175,8 +175,7 @@ export function PartnerManagementTable({ initialPartners, pagination }: PartnerM
       {/* Pagination Controls */}
       <div className="flex items-center justify-between mt-4 text-sm text-muted-foreground">
         <div>
-          Showing <span className="font-medium text-foreground">{pagination.from}</span>–
-          <span className="font-medium text-foreground">{pagination.to}</span> of{" "}
+          Showing <span className="font-medium text-foreground">{pagination.from}</span> - <span className="font-medium text-foreground">{pagination.to}</span> of{" "}
           <span className="font-medium text-foreground">{pagination.total}</span>
         </div>
 
